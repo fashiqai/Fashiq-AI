@@ -1,0 +1,90 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+export default function Sidebar() {
+  const pathname = usePathname();
+
+  return (
+    <aside style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '280px',
+      height: '100vh',
+      background: 'var(--surface)',
+      borderRight: '1px solid var(--border)',
+      padding: '3rem 2rem',
+      display: 'flex',
+      flexDirection: 'column',
+      zIndex: 1000,
+    }}>
+      {/* Brand Heading */}
+      <div style={{ marginBottom: '4rem' }}>
+        <h2 style={{ 
+          fontFamily: "'Playfair Display', serif", 
+          fontSize: '1.8rem', 
+          fontWeight: '400',
+          letterSpacing: '-0.02em',
+          margin: 0
+        }}>
+          Fashion <span style={{ italic: 'true', opacity: 0.5 }}>AI</span>
+        </h2>
+        <div style={{ width: '30px', height: '2px', background: 'var(--accent)', marginTop: '0.5rem' }}></div>
+      </div>
+
+      {/* Navigation Links */}
+      <nav style={{ flex: 1 }}>
+        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          
+          <li>
+            <Link href="/history" style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '1rem', 
+              textDecoration: 'none', 
+              color: pathname === '/history' ? 'var(--foreground)' : 'var(--muted)',
+              fontWeight: pathname === '/history' ? '600' : '400',
+              fontSize: '0.95rem',
+              transition: 'color 0.2s'
+            }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+              View History
+            </Link>
+          </li>
+
+          <li>
+            <Link href="/onboarding" style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '1rem', 
+              textDecoration: 'none', 
+              color: 'var(--muted)', 
+              fontSize: '0.95rem',
+              transition: 'color 0.2s'
+            }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 2.1l4 4-4 4"></path>
+                <path d="M3 12.2v-2a4 4 0 0 1 4-4h12.8"></path>
+                <path d="M7 22.3l-4-4 4-4"></path>
+                <path d="M21 12.2v2a4 4 0 0 1-4 4H8.2"></path>
+              </svg>
+              Switch Studio
+            </Link>
+          </li>
+
+        </ul>
+      </nav>
+
+      {/* Footer Info */}
+      <div style={{ fontSize: '0.7rem', opacity: 0.3, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+        © 2026 Fashion AI Studio
+      </div>
+    </aside>
+  );
+}
