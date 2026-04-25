@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 
@@ -22,6 +23,24 @@ export default function ClothingStudio() {
     pose: "Front",
     background: "Indoor"
   });
+
+  // Preload poses to eliminate UI lag
+  useEffect(() => {
+    const preloadImages = () => {
+      const poses = ["front", "side", "back", "walking", "sitting", "leaning", "hips", "closeup_full", "closeup_half"];
+      poses.forEach(pose => {
+        const imgF = new window.Image();
+        imgF.src = `/poses/female/${pose}.png`;
+        const imgM = new window.Image();
+        imgM.src = `/poses/male/${pose}.png`;
+      });
+    };
+    
+    // Defer preloading slightly to prioritize main render
+    if (typeof window !== "undefined") {
+      setTimeout(preloadImages, 1000);
+    }
+  }, []);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -175,9 +194,8 @@ export default function ClothingStudio() {
 
             {/* Preview State */}
             {preview && !resultImage && !isGenerating && (
-              <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '320px' }}>
+              <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '320px', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
                 <img src={preview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                <div className="rounded-box" style={{ position: 'absolute', bottom: '2rem', right: '2rem', backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>CHANGE IMAGE</div>
               </div>
             )}
 
@@ -192,11 +210,31 @@ export default function ClothingStudio() {
 
             {/* Final Result Image (No Buttons Inside) */}
             {resultImage && !isGenerating && (
-              <div style={{ width: '100%', height: '100%', minHeight: '320px' }}>
+              <div style={{ width: '100%', height: '100%', minHeight: '320px', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
                 <img src={resultImage} alt="AI Result" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
             )}
           </section>
+
+          {/* Change Image Trigger (Below Card) */}
+          {preview && !resultImage && !isGenerating && (
+            <div style={{ width: '100%', maxWidth: '540px', display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+              <label 
+                htmlFor="clothing-upload" 
+                className="rounded-box" 
+                style={{ 
+                  fontSize: '0.7rem', 
+                  padding: '0.5rem 1rem', 
+                  backgroundColor: 'var(--surface)', 
+                  border: '1px solid var(--border)',
+                  cursor: 'pointer',
+                  opacity: 0.8
+                }}
+              >
+                CHANGE IMAGE
+              </label>
+            </div>
+          )}
 
           {/* Independent Action Shelf (Outside the Card) */}
           {resultImage && !isGenerating && (
@@ -256,11 +294,15 @@ export default function ClothingStudio() {
                         className={`pose-card ${config.pose === p.id ? 'active' : ''}`}
                         onClick={() => updateConfig('pose', p.id)}
                       >
-                        <div className="pose-thumb">
-                          <img
+                        <div className="pose-thumb" style={{ position: 'relative', width: '100%', height: '100%' }}>
+                          <Image
                             src={p.thumb}
                             alt={p.label}
-                            onError={(e) => { e.target.src = '/poses/female/front.png'; }} // Fallback for stability
+                            fill
+                            sizes="(max-width: 600px) 45vw, 15vw"
+                            style={{ objectFit: 'cover' }}
+                            placeholder="blur"
+                            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" // simple transparent fallback
                           />
                         </div>
                         <span className="pose-label">{p.label}</span>

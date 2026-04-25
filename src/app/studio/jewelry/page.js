@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 
@@ -48,6 +49,27 @@ export default function JewelryStudio() {
       ]
     }
   };
+
+  // Preload jewelry styles to eliminate UI lag
+  useEffect(() => {
+    const preloadImages = () => {
+      Object.values(JEWELRY_DATA).forEach(typeData => {
+        if (typeData.styles) {
+          typeData.styles.forEach(style => {
+            if (style.image) {
+              const img = new window.Image();
+              img.src = style.image;
+            }
+          });
+        }
+      });
+    };
+    
+    // Defer preloading slightly to prioritize main render
+    if (typeof window !== "undefined") {
+      setTimeout(preloadImages, 1000);
+    }
+  }, []);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -195,9 +217,8 @@ export default function JewelryStudio() {
             )}
 
             {preview && !resultImage && !isGenerating && (
-              <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '320px' }}>
+              <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '320px', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
                 <img src={preview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                <div className="rounded-box" style={{ position: 'absolute', bottom: '2rem', right: '2rem', backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>CHANGE IMAGE</div>
               </div>
             )}
 
@@ -210,11 +231,31 @@ export default function JewelryStudio() {
             )}
 
             {resultImage && !isGenerating && (
-              <div style={{ width: '100%', height: '100%', minHeight: '320px' }}>
+              <div style={{ width: '100%', height: '100%', minHeight: '320px', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
                 <img src={resultImage} alt="AI Result" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
             )}
           </section>
+
+          {/* Change Image Trigger (Below Card) */}
+          {preview && !resultImage && !isGenerating && (
+            <div style={{ width: '100%', maxWidth: '540px', display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+              <label 
+                htmlFor="jewelry-upload" 
+                className="rounded-box" 
+                style={{ 
+                  fontSize: '0.7rem', 
+                  padding: '0.5rem 1rem', 
+                  backgroundColor: 'var(--surface)', 
+                  border: '1px solid var(--border)',
+                  cursor: 'pointer',
+                  opacity: 0.8
+                }}
+              >
+                CHANGE IMAGE
+              </label>
+            </div>
+          )}
 
           {resultImage && !isGenerating && (
             <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', justifyContent: 'center', width: '100%', animation: 'fadeIn 0.5s ease' }}>
@@ -289,14 +330,22 @@ export default function JewelryStudio() {
                           overflow: 'hidden',
                           position: 'relative',
                           padding: 0,
-                          borderWidth: config.style === s.id ? '3px' : '1px'
-                        }}>
-                          {s.image ? (
-                            <img src={s.image} alt={s.label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          ) : (
-                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.2, backgroundColor: 'var(--background)' }}>STYLE</div>
-                          )}
-                        </div>
+                            borderWidth: config.style === s.id ? '3px' : '1px'
+                          }}>
+                            {s.image ? (
+                              <Image 
+                                src={s.image} 
+                                alt={s.label} 
+                                fill
+                                sizes="(max-width: 600px) 45vw, 20vw"
+                                style={{ objectFit: 'cover' }} 
+                                placeholder="blur"
+                                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+                              />
+                            ) : (
+                              <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.2, backgroundColor: 'var(--background)' }}>STYLE</div>
+                            )}
+                          </div>
                         <span style={{
                           fontSize: '0.75rem',
                           color: 'var(--foreground)',
