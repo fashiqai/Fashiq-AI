@@ -37,6 +37,15 @@ export async function updateSession(request) {
 
   const url = new URL(request.nextUrl.href)
 
+  // --- BULLETPROOF FAIL-SAFE FOR SUPABASE REDIRECT MISMATCHES ---
+  // If Supabase accidentally drops the user on the landing page (or anywhere else)
+  // but there is a '?code=' in the URL, we MUST intercept it and send it to the auth handler.
+  if (url.searchParams.has('code') && !url.pathname.startsWith('/auth/callback')) {
+    const callbackUrl = new URL('/auth/callback', request.url)
+    callbackUrl.search = url.search // Preserve the code and any other params
+    return NextResponse.redirect(callbackUrl)
+  }
+
   // Redirect Logic
   // 1. If hitting root and logged in, check profile
   if (user) {
