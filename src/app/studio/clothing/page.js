@@ -15,7 +15,7 @@ export default function ClothingStudio() {
   const [statusMessage, setStatusMessage] = useState("");
   const [resultImage, setResultImage] = useState(null);
 
-  // Configuration State
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [config, setConfig] = useState({
     gender: null, // Start with no gender selected
     identity: "Western",
@@ -91,11 +91,22 @@ export default function ClothingStudio() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--background)' }}>
-      <Sidebar />
+    <div className="studio-layout">
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
       
-      <div className="studio-page animate-up" style={{ flex: 1, marginLeft: '280px', padding: '4rem' }}>
-        <header className="header" style={{ marginBottom: '5rem', textAlign: 'center' }}>
+      <main className="studio-content-wrapper">
+        {/* Mobile Nav Trigger */}
+        <header className="mobile-studio-nav">
+          <Link href="/" className="nav-brand" style={{ fontSize: '1.2rem' }}>
+            Fashion <span className="brand-italic">AI</span>
+          </Link>
+          <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+        </header>
+
+        <div className="studio-page animate-up">
+          <header className="header" style={{ marginBottom: '5rem', textAlign: 'center' }}>
           <p style={{ letterSpacing: '0.2em', opacity: 0.4 }}>AI STUDIO</p>
           <h1 style={{ fontSize: '3rem', fontFamily: "'Playfair Display', serif", marginBottom: '1rem' }}>Clothing Photoshoot</h1>
           <p style={{ opacity: 0.6, maxWidth: '600px', margin: '0 auto', letterSpacing: 'normal', textTransform: 'none' }}>
@@ -279,7 +290,8 @@ export default function ClothingStudio() {
           }
           @keyframes pulse { to { transform: scale(1.2); opacity: 0.5; } }
         `}</style>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

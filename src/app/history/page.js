@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import Sidebar from "@/components/Sidebar";
 
 export default function HistoryPage() {
   const [generations, setGenerations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -26,11 +28,22 @@ export default function HistoryPage() {
   }, []);
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--background)' }}>
-      <Sidebar />
+    <div className="studio-layout">
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
       
-      <div className="history-page animate-up" style={{ flex: 1, marginLeft: '280px', padding: '4rem 2rem', maxWidth: '1200px' }}>
-        <header style={{ marginBottom: '4rem' }}>
+      <main className="studio-content-wrapper">
+        {/* Mobile Nav Trigger */}
+        <header className="mobile-studio-nav">
+          <Link href="/" className="nav-brand" style={{ fontSize: '1.2rem' }}>
+            Fashion <span className="brand-italic">AI</span>
+          </Link>
+          <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+        </header>
+
+        <div className="history-page animate-up" style={{ padding: '4rem 2rem', maxWidth: '1200px' }}>
+          <header style={{ marginBottom: '4rem' }}>
           <p style={{ letterSpacing: '0.2em', opacity: 0.4 }}>GALLERY</p>
           <h1 style={{ fontSize: '3rem', fontFamily: "'Playfair Display', serif" }}>My Photoshoots</h1>
           <p style={{ opacity: 0.6 }}>Your permanent collection of AI-transformed fashion.</p>
@@ -111,7 +124,8 @@ export default function HistoryPage() {
           @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
           .history-item:hover { transform: translateY(-5px); }
         `}</style>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

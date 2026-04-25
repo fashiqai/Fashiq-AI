@@ -54,8 +54,9 @@ export async function GET(req) {
           .eq("prediction_id", id);
 
         // 3. Now we start the "Mirroring" to Supabase Storage.
-        // We don't 'await' the heavy upload before returning to the user!
-        // This solves the Vercel 10s timeout issue.
+        // We MUST 'await' this! On Vercel, if we return the response before this finishes,
+        // the serverless function is instantly killed, so the image never gets stored permanently
+        // and disappears when Fashn.ai flushes their temp storage.
         
         const mirrorToSupabase = async () => {
           try {
@@ -74,21 +75,24 @@ export async function GET(req) {
                 .from("generations")
                 .update({ output_image_url: publicUrl })
                 .eq("prediction_id", id);
+                
+              return publicUrl; // Return the permanent URL
             }
           } catch (e) {
-            console.error("Background Mirroring Failed:", e);
+            console.error("Mirror Upload Failed:", e);
           }
+          return fashnUrl; // Fallback to Fashn URL if upload fails
         };
 
-        // Fire and forget (Vercel might kill this if it takes too long, but the user ALREADY has their image)
-        mirrorToSupabase();
+        // Await the upload (it only takes ~1-3 seconds, well under the 10s limit)
+        const finalUrl = await mirrorToSupabase();
 
       } catch (err) {
         console.error("DB/Storage pass-through error:", err);
       }
 
-      // Return the Fashn URL immediately
-      return NextResponse.json({ status: "completed", output: [fashnUrl] });
+      // Return the permanent URL
+      return NextResponse.json({ status: "completed", output: [typeof finalUrl !== 'undefined' ? finalUrl : fashnUrl] });
     }
 
     // Returns: processing, failed, etc.
