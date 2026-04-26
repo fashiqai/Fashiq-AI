@@ -449,7 +449,8 @@ export default function JewelryStudio() {
                             position: 'relative',
                             padding: 0,
                             borderWidth: config.surface === s.id ? '3px' : '2px',
-                            borderColor: config.surface === s.id ? 'var(--accent)' : 'rgba(255,255,255,0.18)'
+                            borderColor: config.surface === s.id ? 'var(--accent)' : 'rgba(255,255,255,0.18)',
+                            backgroundColor: s.id === 'Pure White' ? '#fff' : 'transparent'
                           }}>
                             <img 
                               src={`/surfaces/${s.file}`} 
