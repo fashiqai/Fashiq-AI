@@ -23,6 +23,7 @@ export default function JewelryStudio() {
     style: "Auto", // Default starting style
     photoshootOption: "On-Model Photoshoot",
     productDescription: "",
+    surface: "Pure White (E-commerce)"
   });
 
   const JEWELRY_DATA = {
@@ -294,20 +295,20 @@ export default function JewelryStudio() {
 
             {!isGenerating && !resultImage && (
               <div className="selection-grid" style={{ marginTop: '2rem', width: '100%', maxWidth: '460px' }}>
-                
+
                 {/* 1. Product Description */}
                 <div className="selection-group" style={{ marginBottom: '1.5rem' }}>
                   <h4 style={{ textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', marginBottom: '0.75rem', color: '#fff' }}>PRODUCT DESCRIPTION</h4>
                   <div className="input-container" style={{ position: 'relative' }}>
-                    <input 
+                    <input
                       type="text"
                       className="rounded-box"
                       placeholder="SKU number or any specification of product"
                       value={config.productDescription}
                       onChange={(e) => updateConfig('productDescription', e.target.value)}
-                      style={{ 
-                        width: '100%', 
-                        background: 'transparent', 
+                      style={{
+                        width: '100%',
+                        background: 'transparent',
                         border: '3px solid rgba(255,255,255,0.18)', // Even thicker visible grey outline
                         color: 'var(--foreground)',
                         padding: '1rem 1.25rem',
@@ -321,13 +322,13 @@ export default function JewelryStudio() {
                 {/* 2. Photoshoot Option */}
                 <div className="selection-group" style={{ marginBottom: '1.5rem' }}>
                   <h4 style={{ textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', marginBottom: '1rem', textAlign: 'left', color: '#fff' }}>PHOTOSHOOT OPTION</h4>
-                  <div style={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: 'repeat(2, 1fr)', 
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
                     gap: '1rem',
                     maxWidth: '420px'
                   }}>
-                    <div 
+                    <div
                       className={`photoshoot-card ${config.photoshootOption === 'On-Model Photoshoot' ? 'active' : ''}`}
                       onClick={() => updateConfig('photoshootOption', 'On-Model Photoshoot')}
                       style={{
@@ -341,18 +342,18 @@ export default function JewelryStudio() {
                       }}
                     >
                       <div style={{ width: '100%', height: '100%', background: 'rgba(255,255,255,0.03)', position: 'relative' }}>
-                         <img 
-                           src="/placeholders/jewelry/on-model.png" 
-                           alt="On-Model"
-                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                           onError={(e) => e.target.style.display = 'none'} 
-                         />
+                        <img
+                          src="/placeholders/jewelry/on-model.png"
+                          alt="On-Model"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          onError={(e) => e.target.style.display = 'none'}
+                        />
                       </div>
-                      <div style={{ 
-                        position: 'absolute', 
-                        bottom: 0, 
-                        left: 0, 
-                        right: 0, 
+                      <div style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
                         padding: '1.25rem 0.75rem 0.75rem',
                         background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
                         textAlign: 'center'
@@ -361,7 +362,7 @@ export default function JewelryStudio() {
                       </div>
                     </div>
 
-                    <div 
+                    <div
                       className={`photoshoot-card ${config.photoshootOption === 'Product Only Catalogue' ? 'active' : ''}`}
                       onClick={() => updateConfig('photoshootOption', 'Product Only Catalogue')}
                       style={{
@@ -375,18 +376,18 @@ export default function JewelryStudio() {
                       }}
                     >
                       <div style={{ width: '100%', height: '100%', background: 'rgba(255,255,255,0.03)', position: 'relative' }}>
-                         <img 
-                           src="/placeholders/jewelry/catalogue.png" 
-                           alt="Catalogue"
-                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                           onError={(e) => e.target.style.display = 'none'} 
-                         />
+                        <img
+                          src="/placeholders/jewelry/catalogue.png"
+                          alt="Catalogue"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          onError={(e) => e.target.style.display = 'none'}
+                        />
                       </div>
-                      <div style={{ 
-                        position: 'absolute', 
-                        bottom: 0, 
-                        left: 0, 
-                        right: 0, 
+                      <div style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
                         padding: '1.25rem 0.75rem 0.75rem',
                         background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
                         textAlign: 'center'
@@ -397,11 +398,11 @@ export default function JewelryStudio() {
                   </div>
                 </div>
 
-                <ConfigSection 
-                  label="Model Gender" 
-                  value={config.gender} 
-                  options={["Female", "Male"]} 
-                  onUpdate={v => updateConfig('gender', v)} 
+                <ConfigSection
+                  label="Model Gender"
+                  value={config.gender}
+                  options={["Female", "Male"]}
+                  onUpdate={v => updateConfig('gender', v)}
                   gridColumns="repeat(2, 1fr)"
                 />
 
@@ -416,7 +417,70 @@ export default function JewelryStudio() {
                   gridColumns="repeat(3, 1fr)"
                 />
 
-                {config.jewelryType !== "Auto" && (
+                {/* Surface Selection - Now BELOW Jewellery Type for Catalogue */}
+                {config.photoshootOption === 'Product Only Catalogue' && (
+                  <div className="selection-group" style={{ width: '100%', marginTop: '2rem' }}>
+                    <h4 style={{ textAlign: 'left', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', color: '#fff' }}>Select Surface</h4>
+                    <div className="pose-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem' }}>
+                      {[
+                        { id: 'Pure White', file: 'pure-white.png', sub: '(Best for e-commerce)' },
+                        { id: 'Soft Grey', file: 'soft-grey.png' },
+                        { id: 'Black Mirror', file: 'black-mirror.png' },
+                        { id: 'Black Matte', file: 'black-matte.png' },
+                        { id: 'Velvet', file: 'velvet.png' },
+                        { id: 'Silk', file: 'silk.png' },
+                        { id: 'Marble', file: 'marble.png' },
+                        { id: 'Concrete', file: 'concrete.png' },
+                        { id: 'Wood', file: 'wood.png' },
+                        { id: 'Glass', file: 'glass.png' },
+                      ].map(s => (
+                        <div 
+                          key={s.id}
+                          className="category-tile"
+                          onClick={() => updateConfig('surface', s.id)}
+                          style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
+                        >
+                          <div className={`pose-card ${config.surface === s.id ? 'active' : ''}`} style={{
+                            width: '100%',
+                            aspectRatio: '1/1',
+                            borderRadius: '12px',
+                            marginBottom: '0.75rem',
+                            overflow: 'hidden',
+                            position: 'relative',
+                            padding: 0,
+                            borderWidth: config.surface === s.id ? '3px' : '2px',
+                            borderColor: config.surface === s.id ? 'var(--accent)' : 'rgba(255,255,255,0.18)'
+                          }}>
+                            <img 
+                              src={`/surfaces/${s.file}`} 
+                              alt={s.id} 
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              onError={(e) => { e.target.style.opacity = 0; }}
+                            />
+                          </div>
+                          <span style={{ 
+                            fontSize: '0.65rem', 
+                            color: 'var(--foreground)', 
+                            fontWeight: '700', 
+                            textTransform: 'uppercase', 
+                            letterSpacing: '0.05em', 
+                            opacity: config.surface === s.id ? 1 : 0.6 
+                          }}>
+                            {s.id}
+                          </span>
+                          {s.sub && (
+                            <span style={{ fontSize: '0.55rem', opacity: 0.4, marginTop: '2px', lineHeight: 1 }}>
+                              {s.sub}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Show Model Style Grid ONLY in On-Model mode */}
+                {config.photoshootOption === 'On-Model Photoshoot' && config.jewelryType !== "Auto" && (
                   <div className="selection-group" style={{ marginTop: '2rem', width: '100%' }}>
                     <h4 style={{ textAlign: 'left', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem' }}>Generation Style</h4>
                     <div className="pose-grid" style={{
@@ -528,9 +592,9 @@ function ConfigSection({ label, value, options, onUpdate, gridColumns }) {
   return (
     <div className="selection-group" style={{ textAlign: 'left', width: '100%' }}>
       <h4 style={{ textAlign: 'left', marginBottom: '1.25rem', fontSize: '0.75rem', fontWeight: '600', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</h4>
-      <div className="pill-container" style={{ 
-        display: 'grid', 
-        gridTemplateColumns: gridColumns || 'repeat(auto-fill, minmax(100px, 1fr))', 
+      <div className="pill-container" style={{
+        display: 'grid',
+        gridTemplateColumns: gridColumns || 'repeat(auto-fill, minmax(100px, 1fr))',
         gap: '0.75rem'
       }}>
         {options.map(opt => (
@@ -538,13 +602,13 @@ function ConfigSection({ label, value, options, onUpdate, gridColumns }) {
             key={opt}
             className={`rounded-box ${value === opt ? 'active' : ''}`}
             onClick={() => onUpdate(opt)}
-            style={{ 
-              width: '100%', 
-              padding: '1.25rem 0.5rem', 
-              textAlign: 'center', 
+            style={{
+              width: '100%',
+              padding: '1.25rem 0.5rem',
+              textAlign: 'center',
               borderRadius: '100px',
-              fontSize: '0.95rem', 
-              fontWeight: '500', 
+              fontSize: '0.95rem',
+              fontWeight: '500',
               border: value === opt ? '3px solid var(--accent)' : '3px solid rgba(255,255,255,0.18)' // Even thicker grey/accent
             }}
           >{opt}</button>
