@@ -35,8 +35,26 @@ export default function LandingPage() {
     }
   ];
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Fashiq AI',
+    operatingSystem: 'Windows, MacOS, Android, iOS',
+    applicationCategory: 'DesignApplication',
+    offers: {
+      '@type': 'Offer',
+      price: '49.00',
+      priceCurrency: 'USD',
+    },
+    description: 'Transform your boutique with professional AI fashion photography.',
+  };
+
   return (
     <div className="landing-page" style={{ background: 'var(--background)' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navbar />
       {/* Hero Section */}
       <section className="hero-compact animate-up">

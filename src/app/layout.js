@@ -15,7 +15,25 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "Fashiq AI | Premium Fashion Photoshoots",
-  description: "Transform your boutique with professional AI fashion photography.",
+  description: "Transform your boutique with professional AI fashion photography. High-end, on-model photoshoots for clothing and jewelry.",
+  keywords: ["Fashiq AI", "AI Fashion Photography", "AI Jewelry Photoshoot", "Virtual Fashion Model", "E-commerce AI photography"],
+  metadataBase: new URL('https://fashiqai.com'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'Fashiq AI | Premium Fashion Photoshoots',
+    description: 'Transform your boutique with professional AI fashion photography.',
+    url: 'https://fashiqai.com',
+    siteName: 'Fashiq AI',
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Fashiq AI | Premium Fashion Photoshoots',
+    description: 'Transform your boutique with professional AI fashion photography.',
+  },
 };
 
 export default function RootLayout({ children }) {
