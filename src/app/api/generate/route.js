@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
-    const { garment_image, gender, identity, pose, background, style, jewelryType, business_type = "clothing" } = await req.json();
+    const { garment_image, gender, identity, pose, background, style, jewelryType, business_type = "clothing", photoshootOption, productDescription, surface } = await req.json();
 
     if (!garment_image) {
       return NextResponse.json({ error: "No product image provided" }, { status: 400 });
@@ -129,8 +129,28 @@ export async function POST(req) {
     // Construct the Final Prompt
     let finalPrompt = "";
     if (business_type === "jewelry") {
-      // Clean, product-first prompt for jewelry
-      finalPrompt = `A high-end ${year} luxury ${business_type} catalog photoshoot, ${compositionStyle}, wearing ${categoryKeywords}, shot on a ${gender} model. ${randomVibe}, sharp focus on product, high-end gemstone brilliance, realistic skin textures, 8k resolution, masterpiece.`;
+      if (photoshootOption === 'Product Only Catalogue') {
+        const surfaceMap = {
+          "Pure White": "pure white seamless studio background, bright soft e-commerce lighting",
+          "Soft Grey": "clean soft grey matte surface, neutral studio lighting",
+          "Black Mirror": "highly reflective black glass surface, dramatic dark reflections",
+          "Black Matte": "smooth matte black velvet-like surface, moody contrast lighting",
+          "Velvet": "luxurious dark velvet fabric texture, rich deep folds",
+          "Silk": "elegant cascading silk fabric, soft luminous ripples",
+          "Marble": "premium white marble surface with natural grey veining, high-fashion aesthetic",
+          "Concrete": "minimalist raw concrete texture, industrial chic finish",
+          "Wood": "natural warm wood grain surface, organic earthy feel",
+          "Glass": "clear pristine glass surface with subtle reflections and caustics",
+        };
+        const surfaceContext = surfaceMap[surface] || "premium neutral surface";
+        const typeContext = (jewelryType && jewelryType !== "Auto") ? jewelryType.toLowerCase() : "luxury jewelry piece";
+        
+        // Product-only prompt engineered for macro realism
+        finalPrompt = `High-end macro product photography of a ${typeContext}. The product is elegantly placed resting on a ${surfaceContext}. ${categoryKeywords}. ${randomVibe}, absolute sharp focus on the jewelry, brilliant gemstone reflections, no humans, no body parts, pure still life photography, luxury catalog masterpiece, 8k, photorealistic.`;
+      } else {
+        // Clean, product-first prompt for jewelry on-model
+        finalPrompt = `A high-end ${year} luxury jewelry catalog photoshoot, ${compositionStyle}, wearing ${categoryKeywords}, shot on a ${gender} model. ${randomVibe}, sharp focus on product, high-end gemstone brilliance, realistic skin textures, 8k resolution, masterpiece.`;
+      }
     } else {
       // Contextual, pose-driven prompt for clothing
       finalPrompt = `A luxury ${year} fashion photoshoot, a ${gender} model with ${identity} features, ${compositionStyle}, in a professional ${background} setting. ${randomVibe}, natural skin pores, realistic micro-expressions, avoid plastic look, hyper-realistic, masterpiece.`;
@@ -172,7 +192,7 @@ export async function POST(req) {
           prediction_id: data.id,
           status: "processing",
           input_image_url: garment_image.length > 2000 ? "base64_hidden" : garment_image, // Base64 might be too long for text column if not careful, better to store reference or skip for now
-          config: { gender, identity, pose, background, style, jewelryType, business_type },
+          config: { gender, identity, pose, background, style, jewelryType, business_type, photoshootOption, productDescription, surface },
         });
       }
     } catch (dbError) {
