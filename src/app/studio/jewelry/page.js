@@ -21,6 +21,8 @@ export default function JewelryStudio() {
     gender: "Female",
     jewelryType: "Auto", // Default type
     style: "Auto", // Default starting style
+    photoshootOption: "On-Model Photoshoot",
+    productDescription: "",
   });
 
   const JEWELRY_DATA = {
@@ -64,7 +66,7 @@ export default function JewelryStudio() {
         }
       });
     };
-    
+
     // Defer preloading slightly to prioritize main render
     if (typeof window !== "undefined") {
       setTimeout(preloadImages, 1000);
@@ -139,7 +141,7 @@ export default function JewelryStudio() {
   return (
     <div className="studio-layout">
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-      
+
       <main className="studio-content-wrapper">
         {/* Mobile Nav Trigger */}
         <header className="mobile-studio-nav">
@@ -153,192 +155,305 @@ export default function JewelryStudio() {
 
         <div className="studio-page animate-up">
           <header className="header" style={{ marginBottom: '5rem', textAlign: 'center' }}>
-          <p style={{ letterSpacing: '0.2em', opacity: 0.4 }}>LUXURY STUDIO</p>
-          <h1 style={{ fontSize: '3rem', fontFamily: "'Playfair Display', serif", marginBottom: '1rem' }}>Jewelry Showcase</h1>
-          <p style={{ opacity: 0.6, maxWidth: '600px', margin: '0 auto', letterSpacing: 'normal', textTransform: 'none' }}>
-            Hero-focused AI imagery for high-end ornaments and accessories.
-          </p>
-        </header>
+            <p style={{ letterSpacing: '0.2em', opacity: 0.4 }}>LUXURY STUDIO</p>
+            <h1 style={{ fontSize: '3rem', fontFamily: "'Playfair Display', serif", marginBottom: '1rem' }}>Jewelry Showcase</h1>
+            <p style={{ opacity: 0.6, maxWidth: '600px', margin: '0 auto', letterSpacing: 'normal', textTransform: 'none' }}>
+              Hero-focused AI imagery for high-end ornaments and accessories.
+            </p>
+          </header>
 
-        <div className="studio-console" style={{ width: '100%', maxWidth: '800px', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '0 auto' }}>
+          <div className="studio-console" style={{ width: '100%', maxWidth: '800px', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '0 auto' }}>
 
-          <section
-            className="upload-card"
-            style={{
-              ...(preview || resultImage ? { border: 'none', padding: 0, overflow: 'hidden' } : {}),
-              position: 'relative',
-              width: '100%',
-              maxWidth: '540px'
-            }}
-          >
-            <label
-              htmlFor="jewelry-upload"
+            <section
+              className="upload-card"
               style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
+                ...(preview || resultImage ? { border: 'none', padding: 0, overflow: 'hidden' } : {}),
+                position: 'relative',
                 width: '100%',
-                height: '100%',
-                cursor: 'pointer',
-                zIndex: 10,
-                display: (resultImage || isGenerating) ? 'none' : 'block'
+                maxWidth: '460px',
+                minHeight: '280px',
+                border: '2px dotted var(--accent)', // Fixed thicker yellow/accent dotted border
+                boxShadow: '0 0 15px rgba(190, 242, 100, 0.1)'
               }}
-            />
-            <input
-              id="jewelry-upload"
-              type="file"
-              style={{
-                position: 'absolute',
-                width: '1px',
-                height: '1px',
-                padding: '0',
-                margin: '-1px',
-                overflow: 'hidden',
-                clip: 'rect(0, 0, 0, 0)',
-                whiteSpace: 'nowrap',
-                borderWidth: '0',
-                opacity: 0
-              }}
-              accept="image/*"
-              onChange={handleFileChange}
-              disabled={isGenerating || !!resultImage}
-            />
+            >
+              <label
+                htmlFor="jewelry-upload"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  cursor: 'pointer',
+                  zIndex: 10,
+                  display: (resultImage || isGenerating) ? 'none' : 'block'
+                }}
+              />
+              <input
+                id="jewelry-upload"
+                type="file"
+                style={{
+                  position: 'absolute',
+                  width: '1px',
+                  height: '1px',
+                  padding: '0',
+                  margin: '-1px',
+                  overflow: 'hidden',
+                  clip: 'rect(0, 0, 0, 0)',
+                  whiteSpace: 'nowrap',
+                  borderWidth: '0',
+                  opacity: 0
+                }}
+                accept="image/*"
+                onChange={handleFileChange}
+                disabled={isGenerating || !!resultImage}
+              />
 
-            {!preview && !resultImage && !isGenerating && (
-              <>
-                <div className="upload-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                </div>
-                <div className="upload-text">
-                  <h3>UPLOAD JEWELLERY PIECE</h3>
-                  <p>Necklaces, Earrings, Rings or Bracelets</p>
-                </div>
-              </>
-            )}
+              {!preview && !resultImage && !isGenerating && (
+                <>
+                  <div className="upload-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                  </div>
+                  <div className="upload-text">
+                    <h3>UPLOAD JEWELLERY PIECE</h3>
+                    <p>Necklaces, Earrings, Rings or Bracelets</p>
+                  </div>
+                </>
+              )}
 
+              {preview && !resultImage && !isGenerating && (
+                <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '280px', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
+                  <img src={preview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                </div>
+              )}
+
+              {isGenerating && (
+                <div style={{ padding: '4rem', textAlign: 'center', width: '100%' }}>
+                  <div className="loader" style={{ marginBottom: '2rem' }}>✨</div>
+                  <h3 style={{ textTransform: 'uppercase', letterSpacing: '0.1em' }}>{statusMessage}</h3>
+                  <p style={{ fontSize: '0.8rem', opacity: 0.5, marginTop: '1rem' }}>Rendering intricate metal and stone details. Please wait.</p>
+                </div>
+              )}
+
+              {resultImage && !isGenerating && (
+                <div style={{ width: '100%', height: '100%', minHeight: '280px', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
+                  <img src={resultImage} alt="AI Result" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+              )}
+            </section>
+
+            {/* Change Image Trigger (Below Card) */}
             {preview && !resultImage && !isGenerating && (
-              <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '320px', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
-                <img src={preview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-              </div>
-            )}
-
-            {isGenerating && (
-              <div style={{ padding: '4rem', textAlign: 'center', width: '100%' }}>
-                <div className="loader" style={{ marginBottom: '2rem' }}>✨</div>
-                <h3 style={{ textTransform: 'uppercase', letterSpacing: '0.1em' }}>{statusMessage}</h3>
-                <p style={{ fontSize: '0.8rem', opacity: 0.5, marginTop: '1rem' }}>Rendering intricate metal and stone details. Please wait.</p>
+              <div style={{ width: '100%', maxWidth: '460px', display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+                <label
+                  htmlFor="jewelry-upload"
+                  className="rounded-box"
+                  style={{
+                    fontSize: '0.7rem',
+                    padding: '0.5rem 1rem',
+                    backgroundColor: 'var(--surface)',
+                    border: '1px solid var(--border)',
+                    cursor: 'pointer',
+                    opacity: 0.8
+                  }}
+                >
+                  CHANGE IMAGE
+                </label>
               </div>
             )}
 
             {resultImage && !isGenerating && (
-              <div style={{ width: '100%', height: '100%', minHeight: '320px', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
-                <img src={resultImage} alt="AI Result" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', justifyContent: 'center', width: '100%', animation: 'fadeIn 0.5s ease' }}>
+                <button
+                  onClick={async () => {
+                    const response = await fetch(resultImage);
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `fasionai-jewelry-${Date.now()}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                  }}
+                  className="rounded-box"
+                  style={{ backgroundColor: 'var(--accent)', color: '#000', padding: '1.25rem 3rem', cursor: 'pointer', boxShadow: '0 10px 30px rgba(255,255,255,0.1)', fontWeight: '700' }}
+                >
+                  DOWNLOAD SHOT
+                </button>
+                <button
+                  onClick={() => { setResultImage(null); setFile(null); setPreview(null); }}
+                  className={`rounded-box`}
+                  style={{ background: 'var(--surface)', border: '1px solid var(--border)', padding: '1.25rem 3rem', cursor: 'pointer' }}
+                >
+                  NEW PIECE
+                </button>
               </div>
             )}
-          </section>
 
-          {/* Change Image Trigger (Below Card) */}
-          {preview && !resultImage && !isGenerating && (
-            <div style={{ width: '100%', maxWidth: '540px', display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
-              <label 
-                htmlFor="jewelry-upload" 
-                className="rounded-box" 
-                style={{ 
-                  fontSize: '0.7rem', 
-                  padding: '0.5rem 1rem', 
-                  backgroundColor: 'var(--surface)', 
-                  border: '1px solid var(--border)',
-                  cursor: 'pointer',
-                  opacity: 0.8
-                }}
-              >
-                CHANGE IMAGE
-              </label>
-            </div>
-          )}
+            {!isGenerating && !resultImage && (
+              <div className="selection-grid" style={{ marginTop: '2rem', width: '100%', maxWidth: '460px' }}>
+                
+                {/* 1. Product Description */}
+                <div className="selection-group" style={{ marginBottom: '1.5rem' }}>
+                  <h4 style={{ textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', marginBottom: '0.75rem', color: '#fff' }}>PRODUCT DESCRIPTION</h4>
+                  <div className="input-container" style={{ position: 'relative' }}>
+                    <input 
+                      type="text"
+                      className="rounded-box"
+                      placeholder="SKU number or any specification of product"
+                      value={config.productDescription}
+                      onChange={(e) => updateConfig('productDescription', e.target.value)}
+                      style={{ 
+                        width: '100%', 
+                        background: 'transparent', 
+                        border: '3px solid rgba(255,255,255,0.18)', // Even thicker visible grey outline
+                        color: 'var(--foreground)',
+                        padding: '1rem 1.25rem',
+                        fontSize: '0.85rem',
+                        outline: 'none'
+                      }}
+                    />
+                  </div>
+                </div>
 
-          {resultImage && !isGenerating && (
-            <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', justifyContent: 'center', width: '100%', animation: 'fadeIn 0.5s ease' }}>
-              <button
-                onClick={async () => {
-                  const response = await fetch(resultImage);
-                  const blob = await response.blob();
-                  const url = window.URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = `fasionai-jewelry-${Date.now()}.png`;
-                  document.body.appendChild(a);
-                  a.click();
-                  window.URL.revokeObjectURL(url);
-                  document.body.removeChild(a);
-                }}
-                className="rounded-box"
-                style={{ backgroundColor: 'var(--accent)', color: '#000', padding: '1.25rem 3rem', cursor: 'pointer', boxShadow: '0 10px 30px rgba(255,255,255,0.1)', fontWeight: '700' }}
-              >
-                DOWNLOAD SHOT
-              </button>
-              <button
-                onClick={() => { setResultImage(null); setFile(null); setPreview(null); }}
-                className={`rounded-box`}
-                style={{ background: 'var(--surface)', border: '1px solid var(--border)', padding: '1.25rem 3rem', cursor: 'pointer' }}
-              >
-                NEW PIECE
-              </button>
-            </div>
-          )}
-
-          {!isGenerating && !resultImage && (
-            <div className="selection-grid" style={{ marginTop: '2rem', width: '100%', maxWidth: '540px' }}>
-              <ConfigSection label="Model Gender" value={config.gender} options={["Female", "Male"]} onUpdate={v => updateConfig('gender', v)} />
-
-              <ConfigSection
-                label="Jewellery Type"
-                value={config.jewelryType}
-                options={["Auto", "Necklace", "Earrings", "Ring on finger"]}
-                onUpdate={v => {
-                  updateConfig('jewelryType', v);
-                  updateConfig('style', v === 'Auto' ? 'Auto' : JEWELRY_DATA[v].styles[0].id);
-                }}
-              />
-
-              {config.jewelryType !== "Auto" && (
-                <div className="selection-group" style={{ marginTop: '3rem', width: '100%' }}>
-                  <h4 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Generation Style</h4>
-                  <div className="pose-grid" style={{
-                    display: 'grid',
-                    gridTemplateColumns: config.jewelryType === 'Necklace' ? 'repeat(3, 1fr)' : (config.jewelryType === 'Ring on finger' ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)'),
-                    gap: '1.25rem'
+                {/* 2. Photoshoot Option */}
+                <div className="selection-group" style={{ marginBottom: '1.5rem' }}>
+                  <h4 style={{ textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', marginBottom: '1rem', textAlign: 'left', color: '#fff' }}>PHOTOSHOOT OPTION</h4>
+                  <div style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: 'repeat(2, 1fr)', 
+                    gap: '1rem',
+                    maxWidth: '420px'
                   }}>
-                    {JEWELRY_DATA[config.jewelryType].styles.map(s => (
-                      <div
-                        key={s.id}
-                        className="category-tile"
-                        onClick={() => updateConfig('style', s.id)}
-                        style={{
-                          textAlign: 'center',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <div className={`pose-card ${config.style === s.id ? 'active' : ''}`} style={{
-                          width: '100%',
-                          aspectRatio: '1/1',
-                          borderRadius: '12px',
-                          marginBottom: '1rem',
-                          overflow: 'hidden',
-                          position: 'relative',
-                          padding: 0,
+                    <div 
+                      className={`photoshoot-card ${config.photoshootOption === 'On-Model Photoshoot' ? 'active' : ''}`}
+                      onClick={() => updateConfig('photoshootOption', 'On-Model Photoshoot')}
+                      style={{
+                        position: 'relative',
+                        aspectRatio: '1/1.1',
+                        borderRadius: '1.25rem',
+                        overflow: 'hidden',
+                        cursor: 'pointer',
+                        border: config.photoshootOption === 'On-Model Photoshoot' ? '2px solid var(--accent)' : '1px solid var(--border)', // Back to light style
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      <div style={{ width: '100%', height: '100%', background: 'rgba(255,255,255,0.03)', position: 'relative' }}>
+                         <img 
+                           src="/placeholders/jewelry/on-model.png" 
+                           alt="On-Model"
+                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                           onError={(e) => e.target.style.display = 'none'} 
+                         />
+                      </div>
+                      <div style={{ 
+                        position: 'absolute', 
+                        bottom: 0, 
+                        left: 0, 
+                        right: 0, 
+                        padding: '1.25rem 0.75rem 0.75rem',
+                        background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
+                        textAlign: 'center'
+                      }}>
+                        <p style={{ fontSize: '0.65rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>On-Model Photoshoot</p>
+                      </div>
+                    </div>
+
+                    <div 
+                      className={`photoshoot-card ${config.photoshootOption === 'Product Only Catalogue' ? 'active' : ''}`}
+                      onClick={() => updateConfig('photoshootOption', 'Product Only Catalogue')}
+                      style={{
+                        position: 'relative',
+                        aspectRatio: '1/1.1',
+                        borderRadius: '1.25rem',
+                        overflow: 'hidden',
+                        cursor: 'pointer',
+                        border: config.photoshootOption === 'Product Only Catalogue' ? '2px solid var(--accent)' : '1px solid var(--border)', // Back to light style
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      <div style={{ width: '100%', height: '100%', background: 'rgba(255,255,255,0.03)', position: 'relative' }}>
+                         <img 
+                           src="/placeholders/jewelry/catalogue.png" 
+                           alt="Catalogue"
+                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                           onError={(e) => e.target.style.display = 'none'} 
+                         />
+                      </div>
+                      <div style={{ 
+                        position: 'absolute', 
+                        bottom: 0, 
+                        left: 0, 
+                        right: 0, 
+                        padding: '1.25rem 0.75rem 0.75rem',
+                        background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
+                        textAlign: 'center'
+                      }}>
+                        <p style={{ fontSize: '0.65rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>Product Only Catalogue</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <ConfigSection 
+                  label="Model Gender" 
+                  value={config.gender} 
+                  options={["Female", "Male"]} 
+                  onUpdate={v => updateConfig('gender', v)} 
+                  gridColumns="repeat(2, 1fr)"
+                />
+
+                <ConfigSection
+                  label="Jewellery Type"
+                  value={config.jewelryType}
+                  options={["Auto", "Necklace", "Earrings", "Ring on finger"]}
+                  onUpdate={v => {
+                    updateConfig('jewelryType', v);
+                    updateConfig('style', v === 'Auto' ? 'Auto' : JEWELRY_DATA[v].styles[0].id);
+                  }}
+                  gridColumns="repeat(3, 1fr)"
+                />
+
+                {config.jewelryType !== "Auto" && (
+                  <div className="selection-group" style={{ marginTop: '2rem', width: '100%' }}>
+                    <h4 style={{ textAlign: 'left', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem' }}>Generation Style</h4>
+                    <div className="pose-grid" style={{
+                      display: 'grid',
+                      gridTemplateColumns: config.jewelryType === 'Necklace' ? 'repeat(3, 1fr)' : (config.jewelryType === 'Ring on finger' ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)'),
+                      gap: '1.25rem'
+                    }}>
+                      {JEWELRY_DATA[config.jewelryType].styles.map(s => (
+                        <div
+                          key={s.id}
+                          className="category-tile"
+                          onClick={() => updateConfig('style', s.id)}
+                          style={{
+                            textAlign: 'center',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <div className={`pose-card ${config.style === s.id ? 'active' : ''}`} style={{
+                            width: '100%',
+                            aspectRatio: '1/1',
+                            borderRadius: '12px',
+                            marginBottom: '1rem',
+                            overflow: 'hidden',
+                            position: 'relative',
+                            padding: 0,
                             borderWidth: config.style === s.id ? '3px' : '1px'
                           }}>
                             {s.image ? (
-                              <Image 
-                                src={s.image} 
-                                alt={s.label} 
+                              <Image
+                                src={s.image}
+                                alt={s.label}
                                 fill
                                 sizes="(max-width: 600px) 45vw, 20vw"
-                                style={{ objectFit: 'cover' }} 
+                                style={{ objectFit: 'cover' }}
                                 placeholder="blur"
                                 blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
                               />
@@ -346,37 +461,62 @@ export default function JewelryStudio() {
                               <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.2, backgroundColor: 'var(--background)' }}>STYLE</div>
                             )}
                           </div>
-                        <span style={{
-                          fontSize: '0.75rem',
-                          color: 'var(--foreground)',
-                          fontWeight: '700',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
-                          opacity: config.style === s.id ? 1 : 0.6
-                        }}>
-                          {s.label}
-                        </span>
-                      </div>
-                    ))}
+                          <span style={{
+                            fontSize: '0.75rem',
+                            color: 'var(--foreground)',
+                            fontWeight: '700',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.05em',
+                            opacity: config.style === s.id ? 1 : 0.6
+                          }}>
+                            {s.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          )}
+                )}
+              </div>
+            )}
 
-          {!isGenerating && !resultImage && preview && (
-            <button className="generate-btn" onClick={generatePhotoshoot} style={{ width: '100%', marginTop: '4rem' }}>
-              Generate Hero Shot
-            </button>
-          )}
-        </div>
+            {!isGenerating && !resultImage && preview && (
+              <button className="generate-btn" onClick={generatePhotoshoot} style={{ width: '100%', marginTop: '4rem' }}>
+                Generate Hero Shot
+              </button>
+            )}
+          </div>
 
-        <style jsx>{`
+          <style jsx>{`
           .loader {
             font-size: 3rem;
             animation: pulse 1s infinite alternate;
           }
           @keyframes pulse { to { transform: scale(1.2); opacity: 0.5; } }
+          
+          .selection-group h4 {
+            text-align: left !important;
+            color: #ffffff !important; /* Pure white */
+            opacity: 1 !important;
+            font-size: 0.85rem !important;
+          }
+
+          .pill-container {
+            justify-content: flex-start !important;
+          }
+
+          input::placeholder {
+            color: var(--foreground);
+            opacity: 0.3;
+          }
+
+          .photoshoot-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent) !important;
+          }
+
+          .photoshoot-card.active {
+            box-shadow: 0 0 20px rgba(var(--accent-rgb, 180, 255, 0), 0.2);
+          }
         `}</style>
         </div>
       </main>
@@ -384,16 +524,29 @@ export default function JewelryStudio() {
   );
 }
 
-function ConfigSection({ label, value, options, onUpdate }) {
+function ConfigSection({ label, value, options, onUpdate, gridColumns }) {
   return (
-    <div className="selection-group">
-      <h4>{label}</h4>
-      <div className="pill-container">
+    <div className="selection-group" style={{ textAlign: 'left', width: '100%' }}>
+      <h4 style={{ textAlign: 'left', marginBottom: '1.25rem', fontSize: '0.75rem', fontWeight: '600', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</h4>
+      <div className="pill-container" style={{ 
+        display: 'grid', 
+        gridTemplateColumns: gridColumns || 'repeat(auto-fill, minmax(100px, 1fr))', 
+        gap: '0.75rem'
+      }}>
         {options.map(opt => (
           <button
             key={opt}
             className={`rounded-box ${value === opt ? 'active' : ''}`}
             onClick={() => onUpdate(opt)}
+            style={{ 
+              width: '100%', 
+              padding: '1.25rem 0.5rem', 
+              textAlign: 'center', 
+              borderRadius: '100px',
+              fontSize: '0.95rem', 
+              fontWeight: '500', 
+              border: value === opt ? '3px solid var(--accent)' : '3px solid rgba(255,255,255,0.18)' // Even thicker grey/accent
+            }}
           >{opt}</button>
         ))}
       </div>
