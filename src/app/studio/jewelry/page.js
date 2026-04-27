@@ -23,9 +23,7 @@ export default function JewelryStudio() {
     gender: "Female",
     jewelryType: "Auto", // Default type
     style: "Auto", // Default starting style
-    photoshootOption: "On-Model Photoshoot",
     productDescription: "",
-    surface: "Pure White (E-commerce)"
   });
 
   const JEWELRY_DATA = {
@@ -328,84 +326,6 @@ export default function JewelryStudio() {
                   </div>
                 </div>
 
-                {/* 2. Photoshoot Option */}
-                <div className="selection-group" style={{ marginBottom: '1.5rem' }}>
-                  <h4 style={{ textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', marginBottom: '1rem', textAlign: 'left', color: '#fff' }}>PHOTOSHOOT OPTION</h4>
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(2, 1fr)',
-                    gap: '1rem',
-                    maxWidth: '420px'
-                  }}>
-                    <div
-                      className={`photoshoot-card ${config.photoshootOption === 'On-Model Photoshoot' ? 'active' : ''}`}
-                      onClick={() => updateConfig('photoshootOption', 'On-Model Photoshoot')}
-                      style={{
-                        position: 'relative',
-                        aspectRatio: '1/1.1',
-                        borderRadius: '1.25rem',
-                        overflow: 'hidden',
-                        cursor: 'pointer',
-                        border: config.photoshootOption === 'On-Model Photoshoot' ? '2px solid var(--accent)' : '1px solid var(--border)', // Back to light style
-                        transition: 'all 0.3s ease'
-                      }}
-                    >
-                      <div style={{ width: '100%', height: '100%', background: 'rgba(255,255,255,0.03)', position: 'relative' }}>
-                        <img
-                          src="/placeholders/jewelry/on-model.png"
-                          alt="On-Model"
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          onError={(e) => e.target.style.display = 'none'}
-                        />
-                      </div>
-                      <div style={{
-                        position: 'absolute',
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        padding: '1.25rem 0.75rem 0.75rem',
-                        background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
-                        textAlign: 'center'
-                      }}>
-                        <p style={{ fontSize: '0.65rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>On-Model Photoshoot</p>
-                      </div>
-                    </div>
-
-                    <div
-                      className={`photoshoot-card ${config.photoshootOption === 'Product Only Catalogue' ? 'active' : ''}`}
-                      onClick={() => updateConfig('photoshootOption', 'Product Only Catalogue')}
-                      style={{
-                        position: 'relative',
-                        aspectRatio: '1/1.1',
-                        borderRadius: '1.25rem',
-                        overflow: 'hidden',
-                        cursor: 'pointer',
-                        border: config.photoshootOption === 'Product Only Catalogue' ? '2px solid var(--accent)' : '1px solid var(--border)', // Back to light style
-                        transition: 'all 0.3s ease'
-                      }}
-                    >
-                      <div style={{ width: '100%', height: '100%', background: 'rgba(255,255,255,0.03)', position: 'relative' }}>
-                        <img
-                          src="/placeholders/jewelry/catalogue.png"
-                          alt="Catalogue"
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          onError={(e) => e.target.style.display = 'none'}
-                        />
-                      </div>
-                      <div style={{
-                        position: 'absolute',
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        padding: '1.25rem 0.75rem 0.75rem',
-                        background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
-                        textAlign: 'center'
-                      }}>
-                        <p style={{ fontSize: '0.65rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>Product Only Catalogue</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
 
                 <ConfigSection
                   label="Model Gender"
@@ -426,71 +346,9 @@ export default function JewelryStudio() {
                   gridColumns="repeat(3, 1fr)"
                 />
 
-                {/* Surface Selection - Now BELOW Jewellery Type for Catalogue */}
-                {config.photoshootOption === 'Product Only Catalogue' && (
-                  <div className="selection-group" style={{ width: '100%', marginTop: '2rem' }}>
-                    <h4 style={{ textAlign: 'left', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', color: '#fff' }}>Select Surface</h4>
-                    <div className="pose-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem' }}>
-                      {[
-                        { id: 'Pure White', file: 'pure-white.png', sub: '(Best for e-commerce)' },
-                        { id: 'Soft Grey', file: 'soft-grey.png' },
-                        { id: 'Black Mirror', file: 'black-mirror.png' },
-                        { id: 'Black Matte', file: 'black-matte.png' },
-                        { id: 'Velvet', file: 'velvet.png' },
-                        { id: 'Silk', file: 'silk.png' },
-                        { id: 'Marble', file: 'marble.png' },
-                        { id: 'Concrete', file: 'concrete.png' },
-                        { id: 'Wood', file: 'wood.png' },
-                        { id: 'Glass', file: 'glass.png' },
-                      ].map(s => (
-                        <div 
-                          key={s.id}
-                          className="category-tile"
-                          onClick={() => updateConfig('surface', s.id)}
-                          style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
-                        >
-                          <div className={`pose-card ${config.surface === s.id ? 'active' : ''}`} style={{
-                            width: '100%',
-                            aspectRatio: '1/1',
-                            borderRadius: '12px',
-                            marginBottom: '0.75rem',
-                            overflow: 'hidden',
-                            position: 'relative',
-                            padding: 0,
-                            borderWidth: config.surface === s.id ? '3px' : '2px',
-                            borderColor: config.surface === s.id ? 'var(--accent)' : 'rgba(255,255,255,0.18)',
-                            backgroundColor: s.id === 'Pure White' ? '#fff' : 'transparent'
-                          }}>
-                            <img 
-                              src={`/surfaces/${s.file}`} 
-                              alt={s.id} 
-                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                              onError={(e) => { e.target.style.opacity = 0; }}
-                            />
-                          </div>
-                          <span style={{ 
-                            fontSize: '0.65rem', 
-                            color: 'var(--foreground)', 
-                            fontWeight: '700', 
-                            textTransform: 'uppercase', 
-                            letterSpacing: '0.05em', 
-                            opacity: config.surface === s.id ? 1 : 0.6 
-                          }}>
-                            {s.id}
-                          </span>
-                          {s.sub && (
-                            <span style={{ fontSize: '0.55rem', opacity: 0.4, marginTop: '2px', lineHeight: 1 }}>
-                              {s.sub}
-                            </span>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
 
-                {/* Show Model Style Grid ONLY in On-Model mode */}
-                {config.photoshootOption === 'On-Model Photoshoot' && config.jewelryType !== "Auto" && (
+                {/* Show Model Style Grid */}
+                {config.jewelryType !== "Auto" && (
                   <div className="selection-group" style={{ marginTop: '2rem', width: '100%' }}>
                     <h4 style={{ textAlign: 'left', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem' }}>Generation Style</h4>
                     <div className="pose-grid" style={{

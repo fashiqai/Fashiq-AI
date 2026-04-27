@@ -117,10 +117,11 @@ export async function POST(req) {
       compositionStyle = jewelryStyleMap[selectedStyle] || jewelryStyleMap["Auto"];
 
       // Contextualize by Jewelry Type if not Auto
-      if (jewelryType && jewelryType !== "Auto") {
-        categoryKeywords = `${jewelryType.toLowerCase()} ${categoryKeywords}`;
-      }
-    } else {
+    }
+
+    if (business_type === "jewelry" && jewelryType && jewelryType !== "Auto") {
+      categoryKeywords = `${jewelryType.toLowerCase()} ${categoryKeywords}`;
+    } else if (business_type === "clothing") {
       categoryKeywords = "high-end fashion garment, realistic fabric drape, tailored clothing, boutique couture";
     }
 
@@ -129,30 +130,8 @@ export async function POST(req) {
     // Construct the Final Prompt
     let finalPrompt = "";
     if (business_type === "jewelry") {
-      if (photoshootOption === 'Product Only Catalogue') {
-        const surfaceMap = {
-          "Pure White": "pure white seamless studio background, bright soft e-commerce lighting",
-          "Soft Grey": "clean soft grey matte surface, neutral studio lighting",
-          "Black Mirror": "highly reflective black glass surface, dramatic dark reflections",
-          "Black Matte": "smooth matte black velvet-like surface, moody contrast lighting",
-          "Velvet": "luxurious dark velvet fabric texture, rich deep folds",
-          "Silk": "elegant cascading silk fabric, soft luminous ripples",
-          "Marble": "premium white marble surface with natural grey veining, high-fashion aesthetic",
-          "Concrete": "minimalist raw concrete texture, industrial chic finish",
-          "Wood": "natural warm wood grain surface, organic earthy feel",
-          "Glass": "clear pristine glass surface with subtle reflections and caustics",
-        };
-        const surfaceContext = surfaceMap[surface] || "premium neutral surface";
-        const typeContext = (jewelryType && jewelryType !== "Auto") ? jewelryType.toLowerCase() : "luxury jewelry piece";
-        
-        // Product-only prompt engineered for macro realism
-        finalPrompt = `A professional still-life macro product photography shot of a ${typeContext}. The ornament is elegantly placed resting on a ${surfaceContext}. ${categoryKeywords}. ${randomVibe}, absolute sharp focus on the jewelry, brilliant gemstone reflections, pure still life photography, luxury catalog masterpiece, 8k, photorealistic.`;
-      } else {
-        // Clean, product-first prompt for jewelry on-model
-        finalPrompt = `A high-end ${year} luxury jewelry catalog photoshoot, ${compositionStyle}, wearing ${categoryKeywords}, shot on a ${gender} model. ${randomVibe}, sharp focus on product, high-end gemstone brilliance, realistic skin textures, 8k resolution, masterpiece.`;
-      }
+      finalPrompt = `A high-end ${year} luxury jewelry catalog photoshoot, ${compositionStyle}, wearing ${categoryKeywords}, shot on a ${gender} model. ${randomVibe}, sharp focus on product, high-end gemstone brilliance, realistic skin textures, 8k resolution, masterpiece.`;
     } else {
-      // Contextual, pose-driven prompt for clothing
       finalPrompt = `A luxury ${year} fashion photoshoot, a ${gender} model with ${identity} features, ${compositionStyle}, in a professional ${background} setting. ${randomVibe}, natural skin pores, realistic micro-expressions, avoid plastic look, hyper-realistic, masterpiece.`;
     }
 
@@ -167,7 +146,6 @@ export async function POST(req) {
         inputs: {
           product_image: garment_image,
           prompt: finalPrompt,
-          negative_prompt: photoshootOption === 'Product Only Catalogue' ? "person, model, face, skin, hands, fingers, human, body parts" : "blurry, low quality, distorted, bad anatomy",
           output_format: "png",
           generation_mode: generationMode,
           return_base64: false
