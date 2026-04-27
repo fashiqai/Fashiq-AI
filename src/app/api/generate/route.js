@@ -146,7 +146,7 @@ export async function POST(req) {
         const typeContext = (jewelryType && jewelryType !== "Auto") ? jewelryType.toLowerCase() : "luxury jewelry piece";
         
         // Product-only prompt engineered for macro realism
-        finalPrompt = `High-end macro product photography of a ${typeContext}. The product is elegantly placed resting on a ${surfaceContext}. ${categoryKeywords}. ${randomVibe}, absolute sharp focus on the jewelry, brilliant gemstone reflections, no humans, no body parts, pure still life photography, luxury catalog masterpiece, 8k, photorealistic.`;
+        finalPrompt = `A professional still-life macro product photography shot of a ${typeContext}. The ornament is elegantly placed resting on a ${surfaceContext}. ${categoryKeywords}. ${randomVibe}, absolute sharp focus on the jewelry, brilliant gemstone reflections, pure still life photography, luxury catalog masterpiece, 8k, photorealistic.`;
       } else {
         // Clean, product-first prompt for jewelry on-model
         finalPrompt = `A high-end ${year} luxury jewelry catalog photoshoot, ${compositionStyle}, wearing ${categoryKeywords}, shot on a ${gender} model. ${randomVibe}, sharp focus on product, high-end gemstone brilliance, realistic skin textures, 8k resolution, masterpiece.`;
@@ -167,6 +167,7 @@ export async function POST(req) {
         inputs: {
           product_image: garment_image,
           prompt: finalPrompt,
+          negative_prompt: photoshootOption === 'Product Only Catalogue' ? "person, model, face, skin, hands, fingers, human, body parts" : "blurry, low quality, distorted, bad anatomy",
           output_format: "png",
           generation_mode: generationMode,
           return_base64: false
