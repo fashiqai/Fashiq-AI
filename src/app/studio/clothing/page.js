@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
+import PremiumLoader from "@/app/components/PremiumLoader";
 
 export default function ClothingStudio() {
   // File & Preview State
@@ -201,11 +202,7 @@ export default function ClothingStudio() {
 
             {/* Generating State */}
             {isGenerating && (
-              <div style={{ padding: '4rem', textAlign: 'center', width: '100%' }}>
-                <div className="loader" style={{ marginBottom: '2rem' }}>🎨</div>
-                <h3 style={{ textTransform: 'uppercase', letterSpacing: '0.1em' }}>{statusMessage}</h3>
-                <p style={{ fontSize: '0.8rem', opacity: 0.5, marginTop: '1rem' }}>This usually takes about 25-40 seconds. Do not refresh.</p>
-              </div>
+              <PremiumLoader preview={preview} status={statusMessage} />
             )}
 
             {/* Final Result Image (No Buttons Inside) */}
@@ -325,13 +322,6 @@ export default function ClothingStudio() {
           )}
         </div>
 
-        <style jsx>{`
-          .loader {
-            font-size: 3rem;
-            animation: pulse 1s infinite alternate;
-          }
-          @keyframes pulse { to { transform: scale(1.2); opacity: 0.5; } }
-        `}</style>
         </div>
       </main>
     </div>

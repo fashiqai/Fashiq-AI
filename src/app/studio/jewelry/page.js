@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
+import PremiumLoader from "@/app/components/PremiumLoader";
 
 export default function JewelryStudio() {
   // File & Preview State
@@ -228,12 +229,9 @@ export default function JewelryStudio() {
                 </div>
               )}
 
+              {/* Generating State */}
               {isGenerating && (
-                <div style={{ padding: '4rem', textAlign: 'center', width: '100%' }}>
-                  <div className="loader" style={{ marginBottom: '2rem' }}>✨</div>
-                  <h3 style={{ textTransform: 'uppercase', letterSpacing: '0.1em' }}>{statusMessage}</h3>
-                  <p style={{ fontSize: '0.8rem', opacity: 0.5, marginTop: '1rem' }}>Rendering intricate metal and stone details. Please wait.</p>
-                </div>
+                <PremiumLoader preview={preview} status={statusMessage} />
               )}
 
               {resultImage && !isGenerating && (
@@ -552,11 +550,6 @@ export default function JewelryStudio() {
           </div>
 
           <style jsx>{`
-          .loader {
-            font-size: 3rem;
-            animation: pulse 1s infinite alternate;
-          }
-          @keyframes pulse { to { transform: scale(1.2); opacity: 0.5; } }
           
           .selection-group h4 {
             text-align: left !important;
