@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import PremiumLoader from "@/app/components/PremiumLoader";
+import { compressImage } from "@/utils/imageCompression";
 
 export default function ClothingStudio() {
   // File & Preview State
@@ -63,19 +64,29 @@ export default function ClothingStudio() {
     setResultImage(null);
 
     try {
-      // 1. Start the generation
+      // 1. Compress Image before sending to avoid "Request Entity Too Large"
+      const compressedImage = await compressImage(preview);
+
+      // 2. Start the generation
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          garment_image: preview,
+          garment_image: compressedImage,
           business_type: "clothing",
           ...config
         }),
       });
 
+      // Handle non-JSON errors (like "Request Entity Too Large" text from server)
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        const textError = await res.text();
+        throw new Error(textError.includes("too large") ? "Image size too large for the server. Try a smaller image." : "Server error. Please try again.");
+      }
+
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) throw new Error(data.error || "Generation error");
 
       // 2. Start the Polling Loop
       const poll = async (predictionId) => {
