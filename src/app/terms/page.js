@@ -19,7 +19,7 @@ const TermsOfService = () => {
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         
         <h1 style={{ fontSize: '2.5rem', marginBottom: '10px', fontWeight: '600' }}>Terms of Service</h1>
-        <p style={{ color: '#a1a1a1', marginBottom: '60px', fontSize: '0.9rem' }}>Last Updated: April 25, 2026</p>
+        <p style={{ color: '#a1a1a1', marginBottom: '60px', fontSize: '0.9rem' }}>Last Updated: May 10, 2026</p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
           
@@ -114,7 +114,7 @@ const TermsOfService = () => {
           <section style={{ borderTop: '1px solid #1e1e20', paddingTop: '40px' }}>
             <h2 style={{ fontSize: '1.5rem', marginBottom: '15px', fontWeight: '600' }}>11. Contact Information</h2>
             <p style={{ lineHeight: '1.7', color: '#ededed' }}>
-              For any questions regarding these Terms, please contact us at: <strong>support@fashiq.ai</strong>
+              For any questions regarding these Terms, please contact us at: <strong>fashiq.ai@gmail.com</strong>
             </p>
           </section>
 

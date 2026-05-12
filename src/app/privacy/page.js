@@ -19,7 +19,7 @@ const PrivacyPolicy = () => {
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         
         <h1 style={{ fontSize: '2.5rem', marginBottom: '10px', fontWeight: '600' }}>Privacy Policy</h1>
-        <p style={{ color: '#a1a1a1', marginBottom: '60px', fontSize: '0.9rem' }}>Last Updated: April 25, 2026</p>
+        <p style={{ color: '#a1a1a1', marginBottom: '60px', fontSize: '0.9rem' }}>Last Updated: May 10, 2026</p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '50px' }}>
           
@@ -132,7 +132,7 @@ const PrivacyPolicy = () => {
           <section style={{ borderTop: '1px solid #1e1e20', paddingTop: '50px' }}>
             <h2 style={{ fontSize: '1.6rem', marginBottom: '20px', fontWeight: '600' }}>12. Contact Information</h2>
             <p style={{ lineHeight: '1.8', color: '#ededed' }}>
-              If you have any questions about this Privacy Policy, please contact our administrative desk at: <strong>support@fashiq.ai</strong>
+              If you have any questions about this Privacy Policy, please contact our administrative desk at: <strong>fashiq.ai@gmail.com</strong>
             </p>
             <p style={{ marginTop: '20px', fontSize: '0.8rem', color: '#a1a1a1' }}>
               Registered office address provided upon legal verification.
