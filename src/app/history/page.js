@@ -76,7 +76,21 @@ export default function HistoryPage() {
               }}>
                 <div style={{ aspectRatio: '3/4', background: 'var(--background)', position: 'relative' }}>
                   {gen.status === 'completed' ? (
-                    <img src={gen.output_image_url} alt="AI Result" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <>
+                      <img
+                        src={gen.output_image_url}
+                        alt="AI Result"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                      <div style={{ display: 'none', height: '100%', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', textAlign: 'center', padding: '2rem', opacity: 0.4 }}>
+                        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🖼️</div>
+                        <p style={{ fontSize: '0.75rem' }}>Image expired</p>
+                      </div>
+                    </>
                   ) : (
                     <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '2rem' }}>
                       <div>
