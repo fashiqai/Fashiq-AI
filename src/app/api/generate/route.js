@@ -13,6 +13,45 @@ export async function POST(req) {
       return NextResponse.json({ error: "FASHN_API_KEY is not configured in .env.local" }, { status: 500 });
     }
 
+    // --- Subscription / credit gate ---
+    {
+      const { createClient } = await import("@/utils/supabase/server");
+      const supabase = await createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("plan, credits_remaining, subscription_status")
+          .eq("id", user.id)
+          .single();
+
+        const plan = profile?.plan ?? "free";
+
+        if (plan === "free") {
+          // Free users get exactly 1 generation; block on the 2nd
+          const { count } = await supabase
+            .from("generations")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", user.id);
+
+          if ((count ?? 0) >= 1) {
+            return NextResponse.json({ error: "upgrade_required" }, { status: 402 });
+          }
+        } else {
+          // Paid users: check credits
+          if ((profile?.credits_remaining ?? 0) <= 0) {
+            return NextResponse.json({ error: "no_credits" }, { status: 402 });
+          }
+          // Deduct credit atomically
+          await supabase
+            .from("profiles")
+            .update({ credits_remaining: profile.credits_remaining - 1 })
+            .eq("id", user.id);
+        }
+      }
+    }
+
     // Multi-Pose Randomness Engine (Sub-pose variations for diversity)
     const poseVariations = {
       "Front": [

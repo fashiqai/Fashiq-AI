@@ -4,12 +4,17 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import Sidebar from "@/components/Sidebar";
+import { useSubscription } from "@/hooks/useSubscription";
+import PaywallModal from "@/app/studio/_components/PaywallModal";
 
 export default function HistoryPage() {
   const [generations, setGenerations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const supabase = createClient();
+
+  const { isPaid, creditsResetAt } = useSubscription();
+  const [showPaywall, setShowPaywall] = useState(false);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -27,9 +32,45 @@ export default function HistoryPage() {
     fetchHistory();
   }, []);
 
+  const handleDownloadClick = (imageUrl) => {
+    if (!isPaid) {
+      setShowPaywall(true);
+      return;
+    }
+    // History downloads don't consume credits — credit was spent at generation time
+    const a = document.createElement("a");
+    a.href = imageUrl;
+    a.download = `fasionai-${Date.now()}.png`;
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
   return (
     <div className="studio-layout">
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+
+      <PaywallModal
+        isOpen={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onUpgrade={async (plan) => {
+          const res = await fetch("/api/checkout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ plan }),
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            alert(err.error ?? "Checkout failed. Please try again.");
+            return;
+          }
+          const { checkout_url } = await res.json();
+          window.location.href = checkout_url;
+        }}
+        context="free"
+        creditsResetAt={creditsResetAt}
+      />
       
       <main className="studio-content-wrapper">
         {/* Mobile Nav Trigger */}
@@ -108,24 +149,23 @@ export default function HistoryPage() {
                   </div>
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
                      {gen.status === 'completed' && (
-                       <a 
-                         href={gen.output_image_url} 
-                         download 
-                         target="_blank"
-                         style={{ 
-                           flex: 1, 
-                           textAlign: 'center', 
-                           padding: '0.75rem', 
-                           background: 'var(--accent)', 
-                           color: '#000', 
-                           borderRadius: '0.75rem', 
-                           fontSize: '0.8rem', 
-                           textDecoration: 'none',
-                           fontWeight: '700'
+                       <button
+                         onClick={() => handleDownloadClick(gen.output_image_url)}
+                         style={{
+                           flex: 1,
+                           textAlign: 'center',
+                           padding: '0.75rem',
+                           background: 'var(--accent)',
+                           color: '#000',
+                           borderRadius: '0.75rem',
+                           fontSize: '0.8rem',
+                           fontWeight: '700',
+                           border: 'none',
+                           cursor: 'pointer',
                          }}
                        >
                          Download
-                       </a>
+                       </button>
                      )}
                   </div>
                 </div>

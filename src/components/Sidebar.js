@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function Sidebar({ isOpen, onClose }) {
+export default function Sidebar({ isOpen, onClose, subscription }) {
   const pathname = usePathname();
+  const { isPaid, creditsRemaining, creditsLimit, creditsResetAt } = subscription ?? {};
 
   return (
     <>
@@ -77,6 +78,34 @@ export default function Sidebar({ isOpen, onClose }) {
 
           </ul>
         </nav>
+
+        {/* Credits display for paid users */}
+        {isPaid && creditsLimit > 0 && (
+          <div style={{
+            marginBottom: '1.5rem',
+            padding: '1rem',
+            background: 'rgba(255,255,255,0.04)',
+            borderRadius: '0.75rem',
+            border: '1px solid var(--border)',
+          }}>
+            <div style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', opacity: 0.4, marginBottom: '0.4rem' }}>
+              Credits
+            </div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.25rem' }}>
+              <span style={{ fontSize: '1.6rem', fontWeight: '700', color: 'var(--accent)', lineHeight: 1 }}>
+                {creditsRemaining}
+              </span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--muted)', opacity: 0.5 }}>
+                / {creditsLimit}
+              </span>
+            </div>
+            {creditsResetAt && (
+              <div style={{ fontSize: '0.65rem', opacity: 0.35, marginTop: '0.3rem' }}>
+                Resets {new Date(creditsResetAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Footer Info */}
         <div style={{ fontSize: '0.7rem', opacity: 0.3, letterSpacing: '0.1em', textTransform: 'uppercase' }}>

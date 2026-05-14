@@ -6,6 +6,8 @@ import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import PremiumLoader from "@/app/components/PremiumLoader";
 import { compressImage } from "@/utils/imageCompression";
+import { useSubscription } from "@/hooks/useSubscription";
+import PaywallModal from "@/app/studio/_components/PaywallModal";
 
 export default function JewelryStudio() {
   // File & Preview State
@@ -19,6 +21,12 @@ export default function JewelryStudio() {
   const [resultImage, setResultImage] = useState(null);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Subscription / paywall
+  const { isPaid, blockReason, creditsRemaining, creditsResetAt, refresh } = useSubscription();
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [paywallContext, setPaywallContext] = useState("free");
+  const [paymentBanner, setPaymentBanner] = useState(false);
   const [config, setConfig] = useState({
     gender: "Female",
     jewelryType: "Auto", // Default type
@@ -51,6 +59,53 @@ export default function JewelryStudio() {
         { id: "Artistic Stance Ring", label: "Artistic Stance", sub: "Dynamic hand pose", image: "/styles/jewelry/ring/ring-6.png" },
       ]
     }
+  };
+
+  // Show success banner when payment completes
+  useEffect(() => {
+    if (isPaid && paymentBanner) {
+      const t = setTimeout(() => setPaymentBanner(false), 5000);
+      return () => clearTimeout(t);
+    }
+  }, [isPaid, paymentBanner]);
+
+  const handleUpgrade = async (plan) => {
+    const res = await fetch("/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ plan }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alert(err.error ?? "Checkout failed. Please try again.");
+      return;
+    }
+    const { checkout_url } = await res.json();
+    setPaymentBanner(true);
+    window.location.href = checkout_url;
+  };
+
+  const handleDownloadClick = async () => {
+    if (!isPaid) {
+      setPaywallContext("free");
+      setShowPaywall(true);
+      return;
+    }
+    if (creditsRemaining <= 0) {
+      setPaywallContext("no_credits");
+      setShowPaywall(true);
+      return;
+    }
+    const response = await fetch(resultImage);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `fasionai-jewelry-${Date.now()}.png`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
   };
 
   // Preload jewelry styles to eliminate UI lag
@@ -115,7 +170,15 @@ export default function JewelryStudio() {
       }
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Generation error");
+      if (!res.ok) {
+        if (data.error === "upgrade_required" || data.error === "no_credits") {
+          setIsGenerating(false);
+          setPaywallContext(data.error === "no_credits" ? "no_credits" : "free");
+          setShowPaywall(true);
+          return;
+        }
+        throw new Error(data.error || "Generation error");
+      }
 
       // 2. Start the Polling Loop
       const poll = async (predictionId) => {
@@ -151,7 +214,27 @@ export default function JewelryStudio() {
 
   return (
     <div className="studio-layout">
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} subscription={{ isPaid, creditsRemaining, creditsLimit: 150, creditsResetAt }} />
+
+      <PaywallModal
+        isOpen={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onUpgrade={handleUpgrade}
+        context={paywallContext}
+        creditsResetAt={creditsResetAt}
+      />
+
+      {paymentBanner && isPaid && (
+        <div style={{
+          position: "fixed", top: "1rem", left: "50%", transform: "translateX(-50%)",
+          zIndex: 4000, background: "var(--accent)", color: "#000",
+          padding: "0.75rem 2rem", borderRadius: "2rem",
+          fontWeight: "700", fontSize: "0.85rem", letterSpacing: "0.05em",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.4)", animation: "fadeIn 0.3s ease",
+        }}>
+          Payment confirmed — you have {creditsRemaining} credits!
+        </div>
+      )}
 
       <main className="studio-content-wrapper">
         {/* Mobile Nav Trigger */}
@@ -273,18 +356,7 @@ export default function JewelryStudio() {
             {resultImage && !isGenerating && (
               <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', justifyContent: 'center', width: '100%', animation: 'fadeIn 0.5s ease' }}>
                 <button
-                  onClick={async () => {
-                    const response = await fetch(resultImage);
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `fasionai-jewelry-${Date.now()}.png`;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                  }}
+                  onClick={handleDownloadClick}
                   className="rounded-box"
                   style={{ backgroundColor: 'var(--accent)', color: '#000', padding: '1.25rem 3rem', cursor: 'pointer', boxShadow: '0 10px 30px rgba(255,255,255,0.1)', fontWeight: '700' }}
                 >
