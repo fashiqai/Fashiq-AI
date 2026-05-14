@@ -14,7 +14,10 @@ export async function POST(req) {
     return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
   }
 
-  const client = new DodoPayments({ bearerToken: process.env.DODO_API_KEY });
+  const client = new DodoPayments({
+    bearerToken: process.env.DODO_API_KEY,
+    environment: process.env.DODO_ENVIRONMENT === "live_mode" ? "live_mode" : "test_mode",
+  });
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
