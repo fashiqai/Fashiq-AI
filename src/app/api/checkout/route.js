@@ -29,17 +29,23 @@ export async function POST(req) {
   const returnUrl = `${appUrl}/studio/${studio}?payment=success`;
   const cancelUrl = `${appUrl}/studio/${studio}`;
 
-  const session = await client.checkoutSessions.create({
-    product_cart: [{ product_id: PLANS[plan].productId, quantity: 1 }],
-    customer: { email: user.email, name: user.user_metadata?.full_name ?? user.email },
-    return_url: returnUrl,
-    cancel_url: cancelUrl,
-    metadata: {
-      user_id: user.id,
-      plan,
-      supabase_url: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    },
-  });
+  try {
+    const session = await client.checkoutSessions.create({
+      product_cart: [{ product_id: PLANS[plan].productId, quantity: 1 }],
+      customer: { email: user.email, name: user.user_metadata?.full_name ?? user.email },
+      return_url: returnUrl,
+      cancel_url: cancelUrl,
+      metadata: {
+        user_id: user.id,
+        plan,
+      },
+    });
 
-  return NextResponse.json({ checkout_url: session.checkout_url });
+    return NextResponse.json({ checkout_url: session.checkout_url });
+  } catch (err) {
+    const message = err?.message ?? "Unknown error";
+    const status = err?.status ?? err?.statusCode ?? 500;
+    console.error("[checkout] DodoPayments error:", status, message, err);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
