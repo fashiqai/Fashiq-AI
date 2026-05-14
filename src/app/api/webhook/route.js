@@ -12,12 +12,39 @@ function getServiceClient() {
   );
 }
 
+async function findUserId(supabase, sub) {
+  // 1. Try metadata.user_id (set during checkout)
+  if (sub.metadata?.user_id) {
+    console.log("[webhook] found user via metadata:", sub.metadata.user_id);
+    return sub.metadata.user_id;
+  }
+
+  // 2. Fallback: look up by customer email via auth admin API
+  const email = sub.customer?.email;
+  if (email) {
+    const { data, error } = await supabase.auth.admin.listUsers();
+    if (error) {
+      console.error("[webhook] listUsers error:", error);
+      return null;
+    }
+    const u = data?.users?.find((x) => x.email?.toLowerCase() === email.toLowerCase());
+    if (u) {
+      console.log("[webhook] found user via email:", u.id);
+      return u.id;
+    }
+    console.warn("[webhook] no user matching email:", email);
+  }
+
+  return null;
+}
+
 export async function POST(req) {
   const rawBody = await req.text();
 
-  // Collect all headers as a plain object for the SDK unwrap helper
   const headers = {};
   req.headers.forEach((value, key) => { headers[key] = value; });
+
+  console.log("[webhook] received request");
 
   const client = new DodoPayments({
     bearerToken: process.env.DODO_API_KEY,
@@ -31,33 +58,44 @@ export async function POST(req) {
       headers,
       key: process.env.DODO_WEBHOOK_SECRET,
     });
-  } catch {
+  } catch (err) {
+    console.error("[webhook] signature verification failed:", err?.message);
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
+  console.log("[webhook] event type:", event.type, "data keys:", Object.keys(event.data || {}));
+
   const supabase = getServiceClient();
   const type = event.type;
+  const sub = event.data;
 
-  if (type === "subscription.active") {
-    const sub = event.data;
-    const plan = planFromProductId(sub.product_id);
-    if (!plan) {
-      return NextResponse.json({ received: true }); // unknown product, skip
-    }
+  try {
+    if (type === "subscription.active") {
+      const plan = planFromProductId(sub.product_id);
+      if (!plan) {
+        console.warn("[webhook] unknown product_id:", sub.product_id);
+        return NextResponse.json({ received: true });
+      }
 
-    const userId = sub.metadata?.user_id;
+      const userId = await findUserId(supabase, sub);
+      if (!userId) {
+        console.error("[webhook] could not identify user for subscription", sub.subscription_id);
+        return NextResponse.json({ received: true });
+      }
 
-    // Idempotency: skip if already processed for this subscription_id
-    const { data: existing } = await supabase
-      .from("profiles")
-      .select("subscription_id")
-      .eq("subscription_id", sub.subscription_id)
-      .maybeSingle();
+      // Idempotency: skip if this subscription_id already saved on this user
+      const { data: existing } = await supabase
+        .from("profiles")
+        .select("subscription_id")
+        .eq("id", userId)
+        .maybeSingle();
 
-    if (existing) return NextResponse.json({ received: true });
+      if (existing?.subscription_id === sub.subscription_id) {
+        console.log("[webhook] already processed:", sub.subscription_id);
+        return NextResponse.json({ received: true });
+      }
 
-    if (userId) {
-      await supabase.from("profiles").update({
+      const { error: updateErr } = await supabase.from("profiles").update({
         plan,
         subscription_id: sub.subscription_id,
         subscription_status: "active",
@@ -67,51 +105,38 @@ export async function POST(req) {
         credits_reset_at: getNextResetDate(),
         plan_expires_at: null,
       }).eq("id", userId);
-    } else {
-      // Fallback: look up by customer email via auth.users
-      const { data: users } = await supabase
-        .from("auth.users")
-        .select("id")
-        .eq("email", sub.customer?.email)
-        .limit(1);
 
-      const uid = users?.[0]?.id;
-      if (uid) {
-        await supabase.from("profiles").update({
-          plan,
-          subscription_id: sub.subscription_id,
-          subscription_status: "active",
-          dodo_customer_id: sub.customer?.customer_id ?? null,
-          credits_remaining: PLANS[plan].credits,
-          credits_limit: PLANS[plan].credits,
-          credits_reset_at: getNextResetDate(),
-          plan_expires_at: null,
-        }).eq("id", uid);
+      if (updateErr) {
+        console.error("[webhook] update error:", updateErr);
+      } else {
+        console.log("[webhook] updated user", userId, "to plan", plan);
       }
-    }
-  } else if (type === "subscription.renewed") {
-    const sub = event.data;
-    const plan = planFromProductId(sub.product_id);
-    if (!plan) return NextResponse.json({ received: true });
+    } else if (type === "subscription.renewed") {
+      const plan = planFromProductId(sub.product_id);
+      if (!plan) return NextResponse.json({ received: true });
 
-    await supabase.from("profiles").update({
-      subscription_status: "active",
-      credits_remaining: PLANS[plan].credits,
-      credits_limit: PLANS[plan].credits,
-      credits_reset_at: getNextResetDate(),
-      plan_expires_at: null,
-    }).eq("subscription_id", sub.subscription_id);
-  } else if (type === "subscription.cancelled" || type === "subscription.expired") {
-    const sub = event.data;
-    await supabase.from("profiles").update({
-      subscription_status: type === "subscription.expired" ? "expired" : "cancelled",
-      plan_expires_at: sub.next_billing_date ?? new Date().toISOString(),
-    }).eq("subscription_id", sub.subscription_id);
-  } else if (type === "subscription.on_hold" || type === "subscription.failed") {
-    const sub = event.data;
-    await supabase.from("profiles").update({
-      subscription_status: type === "subscription.on_hold" ? "on_hold" : "failed",
-    }).eq("subscription_id", sub.subscription_id);
+      await supabase.from("profiles").update({
+        subscription_status: "active",
+        credits_remaining: PLANS[plan].credits,
+        credits_limit: PLANS[plan].credits,
+        credits_reset_at: getNextResetDate(),
+        plan_expires_at: null,
+      }).eq("subscription_id", sub.subscription_id);
+    } else if (type === "subscription.cancelled" || type === "subscription.expired") {
+      await supabase.from("profiles").update({
+        subscription_status: type === "subscription.expired" ? "expired" : "cancelled",
+        plan_expires_at: sub.next_billing_date ?? new Date().toISOString(),
+      }).eq("subscription_id", sub.subscription_id);
+    } else if (type === "subscription.on_hold" || type === "subscription.failed") {
+      await supabase.from("profiles").update({
+        subscription_status: type === "subscription.on_hold" ? "on_hold" : "failed",
+      }).eq("subscription_id", sub.subscription_id);
+    } else {
+      console.log("[webhook] unhandled event type:", type);
+    }
+  } catch (err) {
+    console.error("[webhook] handler error:", err);
+    // Return 200 anyway so DodoPayments doesn't retry the same broken event
   }
 
   return NextResponse.json({ received: true });
