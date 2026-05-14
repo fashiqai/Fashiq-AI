@@ -95,21 +95,25 @@ export async function POST(req) {
         return NextResponse.json({ received: true });
       }
 
-      const { error: updateErr } = await supabase.from("profiles").update({
-        plan,
-        subscription_id: sub.subscription_id,
-        subscription_status: "active",
-        dodo_customer_id: sub.customer?.customer_id ?? null,
-        credits_remaining: PLANS[plan].credits,
-        credits_limit: PLANS[plan].credits,
-        credits_reset_at: getNextResetDate(),
-        plan_expires_at: null,
-      }).eq("id", userId);
+      const { data: updated, error: updateErr } = await supabase
+        .from("profiles")
+        .upsert({
+          id: userId,
+          plan,
+          subscription_id: sub.subscription_id,
+          subscription_status: "active",
+          dodo_customer_id: sub.customer?.customer_id ?? null,
+          credits_remaining: PLANS[plan].credits,
+          credits_limit: PLANS[plan].credits,
+          credits_reset_at: getNextResetDate(),
+          plan_expires_at: null,
+        }, { onConflict: "id" })
+        .select();
 
       if (updateErr) {
-        console.error("[webhook] update error:", updateErr);
+        console.error("[webhook] upsert error:", updateErr);
       } else {
-        console.log("[webhook] updated user", userId, "to plan", plan);
+        console.log("[webhook] upserted user", userId, "to plan", plan, "rows:", updated?.length);
       }
     } else if (type === "subscription.renewed") {
       const plan = planFromProductId(sub.product_id);
