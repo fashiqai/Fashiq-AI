@@ -186,7 +186,7 @@ export default function ClothingStudio() {
 
   return (
     <div className="studio-layout">
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} subscription={{ isPaid, creditsRemaining, creditsLimit: 150, creditsResetAt }} />
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} subscription={{ isPaid, creditsRemaining, creditsResetAt }} />
 
       <PaywallModal
         isOpen={showPaywall}

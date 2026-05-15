@@ -105,7 +105,7 @@ export async function POST(req) {
           dodo_customer_id: sub.customer?.customer_id ?? null,
           credits_remaining: PLANS[plan].credits,
           credits_limit: PLANS[plan].credits,
-          credits_reset_at: getNextResetDate(),
+          credits_reset_at: sub.next_billing_date ?? getNextResetDate(),
           plan_expires_at: null,
         }, { onConflict: "id" })
         .select();
@@ -123,7 +123,7 @@ export async function POST(req) {
         subscription_status: "active",
         credits_remaining: PLANS[plan].credits,
         credits_limit: PLANS[plan].credits,
-        credits_reset_at: getNextResetDate(),
+        credits_reset_at: sub.next_billing_date ?? getNextResetDate(),
         plan_expires_at: null,
       }).eq("subscription_id", sub.subscription_id);
     } else if (type === "subscription.cancelled" || type === "subscription.expired") {

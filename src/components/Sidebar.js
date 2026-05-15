@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 export default function Sidebar({ isOpen, onClose, subscription }) {
   const pathname = usePathname();
-  const { isPaid, creditsRemaining, creditsLimit, creditsResetAt } = subscription ?? {};
+  const { isPaid, creditsRemaining, creditsResetAt } = subscription ?? {};
 
   return (
     <>
@@ -80,7 +80,7 @@ export default function Sidebar({ isOpen, onClose, subscription }) {
         </nav>
 
         {/* Credits display for paid users */}
-        {isPaid && creditsLimit > 0 && (
+        {isPaid && (
           <div style={{
             marginBottom: '1.5rem',
             padding: '1rem',
@@ -91,13 +91,8 @@ export default function Sidebar({ isOpen, onClose, subscription }) {
             <div style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', opacity: 0.4, marginBottom: '0.4rem' }}>
               Credits
             </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.25rem' }}>
-              <span style={{ fontSize: '1.6rem', fontWeight: '700', color: 'var(--accent)', lineHeight: 1 }}>
-                {creditsRemaining}
-              </span>
-              <span style={{ fontSize: '0.75rem', color: 'var(--muted)', opacity: 0.5 }}>
-                / {creditsLimit}
-              </span>
+            <div style={{ fontSize: '1.6rem', fontWeight: '700', color: 'var(--accent)', lineHeight: 1 }}>
+              {creditsRemaining}
             </div>
             {creditsResetAt && (
               <div style={{ fontSize: '0.65rem', opacity: 0.35, marginTop: '0.3rem' }}>
