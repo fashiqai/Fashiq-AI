@@ -239,12 +239,38 @@ export default function JewelryStudio() {
       <main className="studio-content-wrapper">
         {/* Mobile Nav Trigger */}
         <header className="mobile-studio-nav">
-          <Link href="/" className="nav-brand" style={{ fontSize: '1.2rem' }}>
-            Fashion <span className="brand-italic">AI</span>
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
+            <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)} aria-label="Open menu">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+          </div>
+          <Link href="/" className="nav-brand" style={{ fontSize: '1.2rem', textAlign: 'center', whiteSpace: 'nowrap' }}>
+            Fashiq <span className="brand-italic">AI</span>
           </Link>
-          <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-          </button>
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+            <Link href="/history" aria-label="View history" style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              padding: '0 0.85rem',
+              height: '44px',
+              borderRadius: '12px',
+              background: 'var(--surface)',
+              border: '1px solid var(--border)',
+              color: 'var(--foreground)',
+              textDecoration: 'none',
+              fontSize: '0.8rem',
+              fontWeight: '500',
+              letterSpacing: '0.02em',
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+              History
+            </Link>
+          </div>
         </header>
 
         <div className="studio-page animate-up">

@@ -1,11 +1,32 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 
 export default function Sidebar({ isOpen, onClose, subscription }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { isPaid, creditsRemaining, creditsResetAt } = subscription ?? {};
+  const [userEmail, setUserEmail] = useState(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      setUserEmail(data?.user?.email ?? null);
+    });
+  }, []);
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.refresh();
+    router.push("/login");
+  };
 
   return (
     <>
@@ -27,7 +48,7 @@ export default function Sidebar({ isOpen, onClose, subscription }) {
             letterSpacing: '-0.02em',
             margin: 0
           }}>
-            Fashion <span style={{ fontStyle: 'italic', opacity: 0.5 }}>AI</span>
+            Fashiq <span style={{ fontStyle: 'italic', opacity: 0.5 }}>AI</span>
           </h2>
           <div style={{ width: '30px', height: '2px', background: 'var(--accent)', marginTop: '0.5rem' }}></div>
         </div>
@@ -102,9 +123,51 @@ export default function Sidebar({ isOpen, onClose, subscription }) {
           </div>
         )}
 
+        {/* Account / Logout */}
+        <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{
+            fontSize: '0.9rem',
+            color: 'var(--foreground)',
+            opacity: 0.85,
+            marginBottom: '0.85rem',
+            wordBreak: 'break-all',
+            lineHeight: 1.3,
+          }}>
+            {userEmail ?? '—'}
+          </div>
+          <button
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            style={{
+              padding: '0.5rem 1rem',
+              background: 'transparent',
+              border: '1px solid rgba(255, 77, 79, 0.5)',
+              borderRadius: '0.5rem',
+              color: '#ff4d4f',
+              fontSize: '0.95rem',
+              fontWeight: '500',
+              cursor: isLoggingOut ? 'default' : 'pointer',
+              opacity: isLoggingOut ? 0.5 : 1,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              transition: 'opacity 0.2s, background 0.2s, border-color 0.2s',
+            }}
+            onMouseOver={(e) => { if (!isLoggingOut) { e.currentTarget.style.background = 'rgba(255, 77, 79, 0.08)'; e.currentTarget.style.borderColor = 'rgba(255, 77, 79, 0.8)'; } }}
+            onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(255, 77, 79, 0.5)'; }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            {isLoggingOut ? 'Logging out…' : 'Logout'}
+          </button>
+        </div>
+
         {/* Footer Info */}
         <div style={{ fontSize: '0.7rem', opacity: 0.3, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-          © 2026 Fashion AI Studio
+          © 2026 Fashiq AI Studio
         </div>
       </aside>
     </>
