@@ -86,7 +86,7 @@ export default function HistoryPage() {
           <div style={{ flex: 1 }} />
         </header>
 
-        <div className="history-page animate-up" style={{ padding: '4rem 2rem', maxWidth: '1200px' }}>
+        <div className="history-page animate-up" style={{ maxWidth: '1200px' }}>
           <header style={{ marginBottom: '3rem' }}>
           <h1 style={{ fontSize: '2rem', fontFamily: "'Playfair Display', serif", marginBottom: '0.5rem' }}>Your Photoshoots</h1>
           <p style={{ opacity: 0.6 }}>Your collection of AI photoshoots</p>
@@ -105,21 +105,14 @@ export default function HistoryPage() {
         ) : (
           <div className="history-grid">
             {generations.map((gen) => (
-              <div key={gen.id} className="history-item" style={{
-                background: 'var(--surface)',
-                borderRadius: '1.5rem',
-                overflow: 'hidden',
-                boxShadow: 'var(--card-shadow)',
-                transition: 'transform 0.3s ease',
-                border: '1px solid var(--border)'
-              }}>
-                <div style={{ aspectRatio: '3/4', background: 'var(--background)', position: 'relative' }}>
+              <div key={gen.id} className="history-item">
+                <div className="history-image-wrap" style={{ aspectRatio: '3/4', background: 'var(--background)', position: 'relative' }}>
                   {gen.status === 'completed' ? (
                     <>
                       <img
                         src={gen.output_image_url}
                         alt="AI Result"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
                           e.currentTarget.nextSibling.style.display = 'flex';
@@ -129,6 +122,17 @@ export default function HistoryPage() {
                         <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🖼️</div>
                         <p style={{ fontSize: '0.75rem' }}>Image expired</p>
                       </div>
+                      <button
+                        onClick={() => handleDownloadClick(gen.output_image_url)}
+                        aria-label="Download image"
+                        className="history-download-btn"
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                          <polyline points="7 10 12 15 17 10"></polyline>
+                          <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                      </button>
                     </>
                   ) : (
                     <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '2rem' }}>
@@ -139,36 +143,11 @@ export default function HistoryPage() {
                     </div>
                   )}
                 </div>
-                <div style={{ padding: '1.5rem' }}>
-                  {gen.config?.productDescription && (
-                    <div style={{ marginBottom: '0.75rem' }}>
-                      <span style={{ fontSize: '0.85rem', color: 'var(--foreground)', opacity: 0.85, wordBreak: 'break-word' }}>
-                        {gen.config.productDescription}
-                      </span>
-                    </div>
-                  )}
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                     {gen.status === 'completed' && (
-                       <button
-                         onClick={() => handleDownloadClick(gen.output_image_url)}
-                         style={{
-                           flex: 1,
-                           textAlign: 'center',
-                           padding: '0.75rem',
-                           background: 'var(--accent)',
-                           color: '#000',
-                           borderRadius: '0.75rem',
-                           fontSize: '0.8rem',
-                           fontWeight: '700',
-                           border: 'none',
-                           cursor: 'pointer',
-                         }}
-                       >
-                         Download
-                       </button>
-                     )}
+                {gen.config?.productDescription && (
+                  <div className="history-caption">
+                    <span>{gen.config.productDescription}</span>
                   </div>
-                </div>
+                )}
               </div>
             ))}
           </div>
@@ -176,7 +155,53 @@ export default function HistoryPage() {
 
         <style jsx>{`
           @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+          .history-page {
+            padding: 4rem 2rem;
+          }
+          @media (max-width: 768px) {
+            .history-page { padding: 1rem 0.75rem 3rem; }
+          }
+
+          .history-item {
+            transition: transform 0.3s ease;
+          }
           .history-item:hover { transform: translateY(-5px); }
+
+          .history-image-wrap {
+            border-radius: 1.25rem;
+            overflow: hidden;
+            border: 1px solid var(--border);
+          }
+
+          .history-download-btn {
+            position: absolute;
+            bottom: 0.75rem;
+            right: 0.75rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+            transition: transform 0.15s ease, opacity 0.15s ease;
+          }
+          .history-download-btn:hover { transform: scale(1.05); }
+          .history-download-btn:active { transform: scale(0.95); }
+
+          .history-caption {
+            padding: 0.6rem 0.25rem 0;
+            font-size: 0.8rem;
+            color: var(--foreground);
+            opacity: 0.85;
+            word-break: break-word;
+            line-height: 1.35;
+          }
 
           .history-grid {
             display: grid;
@@ -189,7 +214,18 @@ export default function HistoryPage() {
           @media (max-width: 768px) {
             .history-grid {
               grid-template-columns: repeat(2, 1fr);
-              gap: 1.25rem;
+              gap: 0.75rem;
+            }
+            .history-image-wrap { border-radius: 1rem; }
+            .history-download-btn {
+              width: 36px;
+              height: 36px;
+              bottom: 0.5rem;
+              right: 0.5rem;
+            }
+            .history-caption {
+              font-size: 0.75rem;
+              padding: 0.5rem 0.15rem 0;
             }
           }
         `}</style>
