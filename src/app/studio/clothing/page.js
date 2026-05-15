@@ -31,7 +31,8 @@ export default function ClothingStudio() {
     gender: null, // Start with no gender selected
     identity: "Western",
     pose: "Front",
-    background: "Indoor"
+    background: "Indoor",
+    productDescription: ""
   });
 
   // Show success banner when payment completes and subscription is active
@@ -238,7 +239,11 @@ export default function ClothingStudio() {
               ...(preview || resultImage ? { border: 'none', padding: 0, overflow: 'hidden' } : {}),
               position: 'relative',
               width: '100%',
-              maxWidth: '540px'
+              maxWidth: '540px',
+              ...(!(preview || resultImage) ? {
+                border: '2px dotted var(--accent)',
+                boxShadow: '0 0 15px rgba(190, 242, 100, 0.1)'
+              } : {})
             }}
           >
             <label
@@ -350,13 +355,37 @@ export default function ClothingStudio() {
           {/* Configuration Shelves */}
           {!isGenerating && !resultImage && (
             <div className="selection-grid" style={{ marginTop: '2rem', width: '100%', maxWidth: '540px' }}>
+
+              {/* Product Description */}
+              <div className="selection-group" style={{ marginBottom: '1.5rem' }}>
+                <h4 style={{ textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', marginBottom: '0.75rem', color: '#fff' }}>PRODUCT DESCRIPTION</h4>
+                <div className="input-container" style={{ position: 'relative' }}>
+                  <input
+                    type="text"
+                    className="rounded-box"
+                    placeholder="SKU number or any specification of product"
+                    value={config.productDescription}
+                    onChange={(e) => updateConfig('productDescription', e.target.value)}
+                    style={{
+                      width: '100%',
+                      background: 'transparent',
+                      border: '3px solid rgba(255,255,255,0.18)',
+                      color: 'var(--foreground)',
+                      padding: '1rem 1.25rem',
+                      fontSize: '0.85rem',
+                      outline: 'none'
+                    }}
+                  />
+                </div>
+              </div>
+
               <ConfigSection label="Gender Target" value={config.gender} options={["Female", "Male"]} onUpdate={v => updateConfig('gender', v)} />
               <ConfigSection label="Model Identity" value={config.identity} options={["Western", "Indian"]} onUpdate={v => updateConfig('identity', v)} />
 
               {/* 3x3 Visual Pose Grid (Condition: Only show if Gender is selected) */}
               {config.gender && (
                 <div className="selection-group">
-                  <h4 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Pose Selection</h4>
+                  <h4 style={{ textAlign: 'left', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', color: '#fff' }}>Pose Selection</h4>
                   <div className="pose-grid">
                     {[
                       { id: "Front", label: "Front", thumb: `/poses/${config.gender.toLowerCase()}/front.png` },
@@ -406,6 +435,24 @@ export default function ClothingStudio() {
         </div>
 
         </div>
+
+        <style jsx>{`
+          .selection-group h4 {
+            text-align: left !important;
+            color: #ffffff !important;
+            opacity: 1 !important;
+            font-size: 0.85rem !important;
+          }
+
+          .pill-container {
+            justify-content: flex-start !important;
+          }
+
+          input::placeholder {
+            color: var(--foreground);
+            opacity: 0.3;
+          }
+        `}</style>
       </main>
     </div>
   );
@@ -413,14 +460,27 @@ export default function ClothingStudio() {
 
 function ConfigSection({ label, value, options, onUpdate }) {
   return (
-    <div className="selection-group">
-      <h4>{label}</h4>
-      <div className="pill-container">
+    <div className="selection-group" style={{ textAlign: 'left', width: '100%' }}>
+      <h4 style={{ textAlign: 'left', marginBottom: '1.25rem', fontSize: '0.75rem', fontWeight: '600', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</h4>
+      <div className="pill-container" style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        gap: '0.75rem'
+      }}>
         {options.map(opt => (
           <button
             key={opt}
             className={`rounded-box ${value === opt ? 'active' : ''}`}
             onClick={() => onUpdate(opt)}
+            style={{
+              width: '100%',
+              padding: '1.25rem 0.5rem',
+              textAlign: 'center',
+              borderRadius: '100px',
+              fontSize: '0.95rem',
+              fontWeight: '500',
+              border: value === opt ? '3px solid var(--accent)' : '3px solid rgba(255,255,255,0.18)'
+            }}
           >{opt}</button>
         ))}
       </div>
