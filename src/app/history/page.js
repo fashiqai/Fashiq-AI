@@ -75,19 +75,21 @@ export default function HistoryPage() {
       <main className="studio-content-wrapper">
         {/* Mobile Nav Trigger */}
         <header className="mobile-studio-nav">
-          <Link href="/" className="nav-brand" style={{ fontSize: '1.2rem' }}>
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
+            <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)} aria-label="Open menu">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+          </div>
+          <Link href="/" className="nav-brand" style={{ fontSize: '1.2rem', textAlign: 'center', whiteSpace: 'nowrap' }}>
             Fashiq <span className="brand-italic">AI</span>
           </Link>
-          <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-          </button>
+          <div style={{ flex: 1 }} />
         </header>
 
         <div className="history-page animate-up" style={{ padding: '4rem 2rem', maxWidth: '1200px' }}>
-          <header style={{ marginBottom: '4rem' }}>
-          <p style={{ letterSpacing: '0.2em', opacity: 0.4 }}>GALLERY</p>
-          <h1 style={{ fontSize: '3rem', fontFamily: "'Playfair Display', serif" }}>My Photoshoots</h1>
-          <p style={{ opacity: 0.6 }}>Your permanent collection of AI-transformed fashion.</p>
+          <header style={{ marginBottom: '3rem' }}>
+          <h1 style={{ fontSize: '2rem', fontFamily: "'Playfair Display', serif", marginBottom: '0.5rem' }}>Your Photoshoots</h1>
+          <p style={{ opacity: 0.6 }}>Your collection of AI photoshoots</p>
         </header>
 
         {isLoading ? (
@@ -101,11 +103,7 @@ export default function HistoryPage() {
             <p style={{ opacity: 0.5 }}>Start creating in the studio to see your work here.</p>
           </div>
         ) : (
-          <div className="history-grid" style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: '2rem'
-          }}>
+          <div className="history-grid">
             {generations.map((gen) => (
               <div key={gen.id} className="history-item" style={{
                 background: 'var(--surface)',
@@ -142,11 +140,13 @@ export default function HistoryPage() {
                   )}
                 </div>
                 <div style={{ padding: '1.5rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                    <span style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', opacity: 0.3 }}>
-                      {gen.config?.business_type || 'Fashion'} • {gen.config?.pose || 'Standard'}
-                    </span>
-                  </div>
+                  {gen.config?.productDescription && (
+                    <div style={{ marginBottom: '0.75rem' }}>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--foreground)', opacity: 0.85, wordBreak: 'break-word' }}>
+                        {gen.config.productDescription}
+                      </span>
+                    </div>
+                  )}
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
                      {gen.status === 'completed' && (
                        <button
@@ -177,6 +177,21 @@ export default function HistoryPage() {
         <style jsx>{`
           @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
           .history-item:hover { transform: translateY(-5px); }
+
+          .history-grid {
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: repeat(4, 1fr);
+          }
+          @media (max-width: 1024px) {
+            .history-grid { grid-template-columns: repeat(3, 1fr); }
+          }
+          @media (max-width: 768px) {
+            .history-grid {
+              grid-template-columns: repeat(2, 1fr);
+              gap: 1.25rem;
+            }
+          }
         `}</style>
         </div>
       </main>

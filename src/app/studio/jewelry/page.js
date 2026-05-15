@@ -275,8 +275,8 @@ export default function JewelryStudio() {
 
         <div className="studio-page animate-up">
           <header className="header" style={{ marginBottom: '5rem', textAlign: 'center' }}>
-            <p style={{ letterSpacing: '0.2em', opacity: 0.4 }}>LUXURY STUDIO</p>
-            <h1 style={{ fontSize: '3rem', fontFamily: "'Playfair Display', serif", marginBottom: '1rem' }}>Jewelry Showcase</h1>
+            <p style={{ letterSpacing: '0.2em', opacity: 0.4 }}>AI STUDIO</p>
+            <h1 style={{ fontSize: '3rem', fontFamily: "'Playfair Display', serif", marginBottom: '1rem' }}>Jewellery Photoshoots</h1>
             <p style={{ opacity: 0.6, maxWidth: '600px', margin: '0 auto', letterSpacing: 'normal', textTransform: 'none' }}>
               Hero-focused AI imagery for high-end ornaments and accessories.
             </p>
