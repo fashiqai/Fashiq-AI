@@ -461,60 +461,49 @@ export default function ClothingStudio() {
                 <h4 style={{ textAlign: 'left', marginBottom: '1.25rem', fontSize: '0.75rem', fontWeight: '600', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Background</h4>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
 
-                  {/* Indoor — free floating stacked images */}
-                  <div
-                    onClick={() => updateConfig('background', 'Indoor')}
-                    style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}
-                  >
-                    <div style={{ position: 'relative', width: '100%', height: '120px' }}>
-                      {/* Left — behind, peeking left */}
+                  {[
+                    { id: 'Indoor',  img: '/indoor.png',  label: 'Indoor'  },
+                    { id: 'Outdoor', img: '/outdoor.png', label: 'Outdoor' },
+                    { id: 'Studio',  img: null,           label: 'Studio'  },
+                  ].map(opt => (
+                    <div
+                      key={opt.id}
+                      onClick={() => {
+                        updateConfig('background', opt.id);
+                        if (opt.id === 'Studio') updateConfig('studioColor', 'White');
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {/* Card — image only */}
                       <div style={{
-                        position: 'absolute', left: 0, top: '8%',
-                        width: '52%', zIndex: 1,
-                        borderRadius: '0.6rem', overflow: 'hidden',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+                        borderRadius: '0.85rem',
+                        overflow: 'hidden',
+                        border: config.background === opt.id ? '2.5px solid var(--accent)' : '1.5px solid rgba(255,255,255,0.1)',
+                        transition: 'border 0.2s',
+                        background: 'var(--surface)',
+                        height: '100px',
                       }}>
-                        <img src="/left.png" alt="" style={{ width: '100%', height: '100px', display: 'block', objectFit: 'cover' }} />
+                        {opt.img ? (
+                          <img src={opt.img} alt={opt.label} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        ) : (
+                          <div style={{ width: '100%', height: '100%', background: '#f0f0f0' }} />
+                        )}
                       </div>
-                      {/* Hero — center, on top */}
+                      {/* Label below the card */}
                       <div style={{
-                        position: 'absolute', left: '50%', transform: 'translateX(-50%)',
-                        top: 0, width: '54%', zIndex: 3,
-                        borderRadius: '0.6rem', overflow: 'hidden',
-                        boxShadow: '0 6px 20px rgba(0,0,0,0.65)',
-                        outline: config.background === 'Indoor' ? '2px solid var(--accent)' : 'none',
+                        marginTop: '0.5rem',
+                        textAlign: 'center',
+                        fontSize: '0.7rem',
+                        fontWeight: '600',
+                        letterSpacing: '0.1em',
+                        textTransform: 'uppercase',
+                        color: config.background === opt.id ? 'var(--accent)' : 'inherit',
+                        opacity: config.background === opt.id ? 1 : 0.5,
                       }}>
-                        <img src="/hero.png" alt="" style={{ width: '100%', height: '110px', display: 'block', objectFit: 'cover' }} />
-                      </div>
-                      {/* Right — behind, peeking right */}
-                      <div style={{
-                        position: 'absolute', right: 0, top: '8%',
-                        width: '52%', zIndex: 2,
-                        borderRadius: '0.6rem', overflow: 'hidden',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-                      }}>
-                        <img src="/right.png" alt="" style={{ width: '100%', height: '100px', display: 'block', objectFit: 'cover' }} />
+                        {opt.label}
                       </div>
                     </div>
-                    <span style={{ fontSize: '0.7rem', fontWeight: '600', letterSpacing: '0.1em', textTransform: 'uppercase', opacity: config.background === 'Indoor' ? 1 : 0.45, color: config.background === 'Indoor' ? 'var(--accent)' : 'inherit' }}>Indoor</span>
-                  </div>
-
-                  {/* Outdoor — placeholder */}
-                  <div
-                    onClick={() => updateConfig('background', 'Outdoor')}
-                    style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', minHeight: '130px', opacity: config.background === 'Outdoor' ? 1 : 0.45 }}
-                  >
-                    <span style={{ fontSize: '0.7rem', fontWeight: '600', letterSpacing: '0.1em', textTransform: 'uppercase', color: config.background === 'Outdoor' ? 'var(--accent)' : 'inherit' }}>Outdoor</span>
-                    <span style={{ fontSize: '0.6rem', opacity: 0.4 }}>Coming soon</span>
-                  </div>
-
-                  {/* Studio */}
-                  <div
-                    onClick={() => { updateConfig('background', 'Studio'); updateConfig('studioColor', 'White'); }}
-                    style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', minHeight: '130px', opacity: config.background === 'Studio' ? 1 : 0.45 }}
-                  >
-                    <span style={{ fontSize: '0.7rem', fontWeight: '600', letterSpacing: '0.1em', textTransform: 'uppercase', color: config.background === 'Studio' ? 'var(--accent)' : 'inherit' }}>Studio</span>
-                  </div>
+                  ))}
 
                 </div>
 
