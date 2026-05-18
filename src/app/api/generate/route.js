@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
-    const { garment_image, gender, identity, pose, background, style, jewelryType, business_type = "clothing", photoshootOption, productDescription, surface } = await req.json();
+    const { garment_image, gender, identity, pose, background, studioColor, style, jewelryType, business_type = "clothing", photoshootOption, productDescription, surface } = await req.json();
 
     if (!garment_image) {
       return NextResponse.json({ error: "No product image provided" }, { status: 400 });
@@ -171,7 +171,17 @@ export async function POST(req) {
     if (business_type === "jewelry") {
       finalPrompt = `A high-end ${year} luxury jewelry catalog photoshoot, ${compositionStyle}, wearing ${categoryKeywords}, shot on a ${gender} model. ${randomVibe}, sharp focus on product, high-end gemstone brilliance, realistic skin textures, 8k resolution, masterpiece.`;
     } else {
-      finalPrompt = `A luxury ${year} fashion photoshoot, a ${gender} model with ${identity} features, ${compositionStyle}, in a professional ${background} setting. ${randomVibe}, natural skin pores, realistic micro-expressions, avoid plastic look, hyper-realistic, masterpiece.`;
+      const studioColorPrompts = {
+        "White":      "pure white seamless studio backdrop",
+        "Light Grey": "neutral light grey seamless studio backdrop",
+        "Warm Beige": "warm beige seamless studio backdrop",
+        "Soft Pink":  "soft pastel pink seamless studio backdrop",
+        "Black":      "deep black seamless studio backdrop",
+      };
+      const backgroundPrompt = background === "Studio"
+        ? `a minimalist ${studioColorPrompts[studioColor] || "white seamless studio backdrop"}, no props, no distractions, clean product-focused studio environment`
+        : `a professional ${background} setting`;
+      finalPrompt = `A luxury ${year} fashion photoshoot, a ${gender} model with ${identity} features, ${compositionStyle}, ${backgroundPrompt}. ${randomVibe}, natural skin pores, realistic micro-expressions, avoid plastic look, hyper-realistic, masterpiece.`;
     }
 
     const response = await fetch("https://api.fashn.ai/v1/run", {
@@ -210,7 +220,7 @@ export async function POST(req) {
           prediction_id: data.id,
           status: "processing",
           input_image_url: garment_image.length > 2000 ? "base64_hidden" : garment_image, // Base64 might be too long for text column if not careful, better to store reference or skip for now
-          config: { gender, identity, pose, background, style, jewelryType, business_type, photoshootOption, productDescription, surface },
+          config: { gender, identity, pose, background, studioColor, style, jewelryType, business_type, photoshootOption, productDescription, surface },
         });
       }
     } catch (dbError) {

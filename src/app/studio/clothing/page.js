@@ -27,11 +27,20 @@ export default function ClothingStudio() {
   const [showPaywall, setShowPaywall] = useState(false);
   const [paywallContext, setPaywallContext] = useState("free");
   const [paymentBanner, setPaymentBanner] = useState(false);
+  const STUDIO_COLORS = [
+    { id: "White",      hex: "#FFFFFF", label: "White"  },
+    { id: "Light Grey", hex: "#D4D4D4", label: "Grey"   },
+    { id: "Warm Beige", hex: "#E8D5B7", label: "Beige"  },
+    { id: "Soft Pink",  hex: "#F2C4CE", label: "Pink"   },
+    { id: "Black",      hex: "#1A1A1A", label: "Black"  },
+  ];
+
   const [config, setConfig] = useState({
-    gender: null, // Start with no gender selected
+    gender: null,
     identity: "Western",
     pose: "Front",
     background: "Indoor",
+    studioColor: "White",
     productDescription: ""
   });
 
@@ -447,8 +456,90 @@ export default function ClothingStudio() {
                 </div>
               )}
 
-              {/* Background at the Bottom */}
-              <ConfigSection label="Background Essence" value={config.background} options={["Indoor", "Outdoor"]} onUpdate={v => updateConfig('background', v)} />
+              {/* Background Selection */}
+              <div className="selection-group" style={{ textAlign: 'left', width: '100%' }}>
+                <h4 style={{ textAlign: 'left', marginBottom: '1.25rem', fontSize: '0.75rem', fontWeight: '600', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Background</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
+                  {["Indoor", "Outdoor", "Studio"].map(opt => (
+                    <button
+                      key={opt}
+                      className={`rounded-box ${config.background === opt ? 'active' : ''}`}
+                      onClick={() => {
+                        updateConfig('background', opt);
+                        if (opt === 'Studio') updateConfig('studioColor', 'White');
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '1.25rem 0.5rem',
+                        textAlign: 'center',
+                        borderRadius: '100px',
+                        fontSize: '0.95rem',
+                        fontWeight: '500',
+                        border: config.background === opt ? '3px solid var(--accent)' : '3px solid rgba(255,255,255,0.18)',
+                        background: opt === 'Studio' && config.background === 'Studio'
+                          ? STUDIO_COLORS.find(c => c.id === config.studioColor)?.hex
+                          : undefined,
+                        color: opt === 'Studio' && config.background === 'Studio' && config.studioColor === 'Black'
+                          ? '#fff'
+                          : opt === 'Studio' && config.background === 'Studio'
+                          ? '#000'
+                          : undefined,
+                        transition: 'background 0.25s ease',
+                      }}
+                    >{opt}</button>
+                  ))}
+                </div>
+
+                {/* Studio color swatches */}
+                {config.background === 'Studio' && (
+                  <div style={{ marginTop: '0.4rem', animation: 'fadeIn 0.25s ease', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                    {/* Arrow pointing up to Studio */}
+                    <div style={{ width: 'calc(33.33% - 0.25rem)', display: 'flex', justifyContent: 'center' }}>
+                      <svg width="10" height="7" viewBox="0 0 10 7" fill="none">
+                        <path d="M5 0L10 7H0L5 0Z" fill="rgba(255,255,255,0.25)" />
+                      </svg>
+                    </div>
+                    {/* Swatch card */}
+                    <div style={{
+                      border: '1px solid rgba(255,255,255,0.12)',
+                      borderRadius: '0.75rem',
+                      padding: '0.75rem 0.85rem',
+                      display: 'flex',
+                      gap: '0.75rem',
+                      background: 'rgba(255,255,255,0.04)',
+                      alignItems: 'center',
+                    }}>
+                      {STUDIO_COLORS.map(c => (
+                        <div key={c.id}
+                          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem', cursor: 'pointer' }}
+                          onClick={() => updateConfig('studioColor', c.id)}
+                        >
+                          <div style={{
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '50%',
+                            background: c.hex,
+                            border: config.studioColor === c.id
+                              ? '2.5px solid var(--accent)'
+                              : '1.5px solid rgba(255,255,255,0.18)',
+                            boxShadow: config.studioColor === c.id ? '0 0 8px rgba(190,242,100,0.3)' : 'none',
+                            transition: 'border 0.2s, box-shadow 0.2s',
+                          }} />
+                          <span style={{
+                            fontSize: '0.6rem',
+                            opacity: config.studioColor === c.id ? 1 : 0.38,
+                            fontWeight: config.studioColor === c.id ? '700' : '400',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.04em',
+                          }}>
+                            {c.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
