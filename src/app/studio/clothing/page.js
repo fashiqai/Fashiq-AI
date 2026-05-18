@@ -460,34 +460,62 @@ export default function ClothingStudio() {
               <div className="selection-group" style={{ textAlign: 'left', width: '100%' }}>
                 <h4 style={{ textAlign: 'left', marginBottom: '1.25rem', fontSize: '0.75rem', fontWeight: '600', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Background</h4>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
-                  {["Indoor", "Outdoor", "Studio"].map(opt => (
-                    <button
-                      key={opt}
-                      className={`rounded-box ${config.background === opt ? 'active' : ''}`}
-                      onClick={() => {
-                        updateConfig('background', opt);
-                        if (opt === 'Studio') updateConfig('studioColor', 'White');
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '1.25rem 0.5rem',
-                        textAlign: 'center',
-                        borderRadius: '100px',
-                        fontSize: '0.95rem',
-                        fontWeight: '500',
-                        border: config.background === opt ? '3px solid var(--accent)' : '3px solid rgba(255,255,255,0.18)',
-                        background: opt === 'Studio' && config.background === 'Studio'
-                          ? STUDIO_COLORS.find(c => c.id === config.studioColor)?.hex
-                          : undefined,
-                        color: opt === 'Studio' && config.background === 'Studio' && config.studioColor === 'Black'
-                          ? '#fff'
-                          : opt === 'Studio' && config.background === 'Studio'
-                          ? '#000'
-                          : undefined,
-                        transition: 'background 0.25s ease',
-                      }}
-                    >{opt}</button>
-                  ))}
+
+                  {/* Indoor — free floating stacked images */}
+                  <div
+                    onClick={() => updateConfig('background', 'Indoor')}
+                    style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}
+                  >
+                    <div style={{ position: 'relative', width: '100%', height: '120px' }}>
+                      {/* Left — behind, peeking left */}
+                      <div style={{
+                        position: 'absolute', left: 0, top: '8%',
+                        width: '52%', zIndex: 1,
+                        borderRadius: '0.6rem', overflow: 'hidden',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+                      }}>
+                        <img src="/left.png" alt="" style={{ width: '100%', height: '100px', display: 'block', objectFit: 'cover' }} />
+                      </div>
+                      {/* Hero — center, on top */}
+                      <div style={{
+                        position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+                        top: 0, width: '54%', zIndex: 3,
+                        borderRadius: '0.6rem', overflow: 'hidden',
+                        boxShadow: '0 6px 20px rgba(0,0,0,0.65)',
+                        outline: config.background === 'Indoor' ? '2px solid var(--accent)' : 'none',
+                      }}>
+                        <img src="/hero.png" alt="" style={{ width: '100%', height: '110px', display: 'block', objectFit: 'cover' }} />
+                      </div>
+                      {/* Right — behind, peeking right */}
+                      <div style={{
+                        position: 'absolute', right: 0, top: '8%',
+                        width: '52%', zIndex: 2,
+                        borderRadius: '0.6rem', overflow: 'hidden',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+                      }}>
+                        <img src="/right.png" alt="" style={{ width: '100%', height: '100px', display: 'block', objectFit: 'cover' }} />
+                      </div>
+                    </div>
+                    <span style={{ fontSize: '0.7rem', fontWeight: '600', letterSpacing: '0.1em', textTransform: 'uppercase', opacity: config.background === 'Indoor' ? 1 : 0.45, color: config.background === 'Indoor' ? 'var(--accent)' : 'inherit' }}>Indoor</span>
+                  </div>
+
+                  {/* Outdoor — placeholder */}
+                  <div
+                    onClick={() => updateConfig('background', 'Outdoor')}
+                    style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', minHeight: '130px', opacity: config.background === 'Outdoor' ? 1 : 0.45 }}
+                  >
+                    <span style={{ fontSize: '0.7rem', fontWeight: '600', letterSpacing: '0.1em', textTransform: 'uppercase', color: config.background === 'Outdoor' ? 'var(--accent)' : 'inherit' }}>Outdoor</span>
+                    <span style={{ fontSize: '0.6rem', opacity: 0.4 }}>Coming soon</span>
+                  </div>
+
+                  {/* Studio */}
+                  <div
+                    onClick={() => { updateConfig('background', 'Studio'); updateConfig('studioColor', 'White'); }}
+                    style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', minHeight: '130px', opacity: config.background === 'Studio' ? 1 : 0.45 }}
+                  >
+                    <span style={{ fontSize: '0.7rem', fontWeight: '600', letterSpacing: '0.1em', textTransform: 'uppercase', color: config.background === 'Studio' ? 'var(--accent)' : 'inherit' }}>Studio</span>
+                  </div>
+
                 </div>
 
                 {/* Studio color swatches */}
