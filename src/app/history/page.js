@@ -25,6 +25,34 @@ export default function HistoryPage() {
 
       if (!error) {
         setGenerations(data);
+
+        // Re-mirror any image still on a Fashn URL (background, don't block UI)
+        const needsMirror = data.filter(
+          (g) => g.status === "completed" &&
+                 g.output_image_url &&
+                 !g.output_image_url.includes("supabase.co")
+        );
+
+        needsMirror.forEach((g) => {
+          fetch("/api/mirror", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prediction_id: g.prediction_id }),
+          })
+            .then((r) => r.json())
+            .then((res) => {
+              if (res.status === "mirrored" && res.url) {
+                setGenerations((prev) =>
+                  prev.map((item) =>
+                    item.prediction_id === g.prediction_id
+                      ? { ...item, output_image_url: res.url }
+                      : item
+                  )
+                );
+              }
+            })
+            .catch(() => {});
+        });
       }
       setIsLoading(false);
     };

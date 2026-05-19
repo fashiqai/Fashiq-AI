@@ -486,7 +486,7 @@ export default function ClothingStudio() {
                         {opt.img ? (
                           <img src={opt.img} alt={opt.label} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                         ) : (
-                          <div style={{ width: '100%', height: '100%', background: '#f0f0f0' }} />
+                          <div style={{ width: '100%', height: '100%', background: STUDIO_COLORS.find(c => c.id === config.studioColor)?.hex ?? '#f0f0f0', transition: 'background 0.25s ease' }} />
                         )}
                       </div>
                       {/* Label below the card */}

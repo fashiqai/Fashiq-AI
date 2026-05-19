@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 
+// Extend Vercel function timeout (Hobby allows up to 60s)
+export const maxDuration = 60;
+
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
@@ -22,32 +25,38 @@ export async function GET(req) {
 
     if (data.status === "completed" && data.output && data.output.length > 0) {
       const fashnUrl = data.output[0];
-      let finalUrl = fashnUrl; // declared outside try so it's always in scope
+      let finalUrl = fashnUrl;
 
       try {
         const { createClient } = await import("@/utils/supabase/server");
         const supabase = await createClient();
 
-        // If already mirrored to Supabase, return immediately
         const { data: existing } = await supabase
           .from("generations")
           .select("output_image_url")
           .eq("prediction_id", id)
           .single();
 
+        // Already mirrored — return immediately
         if (existing?.output_image_url && existing.output_image_url.includes("supabase.co")) {
           return NextResponse.json({ status: "completed", output: [existing.output_image_url] });
         }
 
-        // Save Fashn URL to DB immediately so status is marked completed
+        // Mark as completed with Fashn URL first (so DB reflects status even if upload fails)
         await supabase
           .from("generations")
           .update({ status: "completed", output_image_url: fashnUrl })
           .eq("prediction_id", id);
 
-        // Mirror image to Supabase Storage for permanent URL
+        // Mirror to Supabase Storage
         try {
+          console.log(`[Mirror] Starting upload for ${id}`);
           const imgRes = await fetch(fashnUrl);
+
+          if (!imgRes.ok) {
+            throw new Error(`Fashn image fetch failed: ${imgRes.status}`);
+          }
+
           const arrayBuffer = await imgRes.arrayBuffer();
           const buffer = Buffer.from(arrayBuffer);
           const fileName = `${id}.png`;
@@ -56,17 +65,22 @@ export async function GET(req) {
             .from("photoshoots")
             .upload(fileName, buffer, { contentType: "image/png", upsert: true });
 
-          if (!uploadError) {
-            const { data: { publicUrl } } = supabase.storage.from("photoshoots").getPublicUrl(fileName);
-            await supabase
-              .from("generations")
-              .update({ output_image_url: publicUrl })
-              .eq("prediction_id", id);
-            finalUrl = publicUrl; // permanent URL — update the in-scope variable
+          if (uploadError) {
+            console.error(`[Mirror] Upload error for ${id}:`, uploadError.message);
+            throw new Error(uploadError.message);
           }
+
+          const { data: { publicUrl } } = supabase.storage.from("photoshoots").getPublicUrl(fileName);
+
+          await supabase
+            .from("generations")
+            .update({ output_image_url: publicUrl })
+            .eq("prediction_id", id);
+
+          finalUrl = publicUrl;
+          console.log(`[Mirror] Success for ${id}: ${publicUrl}`);
         } catch (uploadErr) {
-          console.error("Mirror upload failed:", uploadErr);
-          // finalUrl stays as fashnUrl, which is fine for now
+          console.error(`[Mirror] Failed for ${id}:`, uploadErr.message);
         }
 
       } catch (err) {
