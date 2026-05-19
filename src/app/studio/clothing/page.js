@@ -38,7 +38,7 @@ export default function ClothingStudio() {
   const [config, setConfig] = useState({
     gender: null,
     identity: "Western",
-    pose: "Front",
+    pose: "Best Match",
     background: "Indoor",
     studioColor: "White",
     productDescription: ""
@@ -90,6 +90,19 @@ export default function ClothingStudio() {
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
   };
+
+  // Intercept mobile back button when result is showing
+  useEffect(() => {
+    if (!resultImage) return;
+    window.history.pushState({ studioResult: true }, '');
+    const handlePopState = () => {
+      setResultImage(null);
+      setFile(null);
+      setPreview(null);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [resultImage]);
 
   // Preload poses to eliminate UI lag
   useEffect(() => {
@@ -369,18 +382,18 @@ export default function ClothingStudio() {
 
           {/* Independent Action Shelf (Outside the Card) */}
           {resultImage && !isGenerating && (
-            <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', justifyContent: 'center', width: '100%', animation: 'fadeIn 0.5s ease' }}>
+            <div style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem', justifyContent: 'center', width: '100%', animation: 'fadeIn 0.5s ease' }}>
               <button
                 onClick={handleDownloadClick}
                 className="rounded-box"
-                style={{ backgroundColor: 'var(--accent)', color: '#000', padding: '1.25rem 3rem', cursor: 'pointer', boxShadow: '0 10px 30px rgba(255,255,255,0.1)', fontWeight: '700' }}
+                style={{ backgroundColor: 'var(--accent)', color: '#000', padding: '0.85rem 2rem', cursor: 'pointer', boxShadow: '0 10px 30px rgba(255,255,255,0.1)', fontWeight: '700', fontSize: '0.85rem' }}
               >
                 DOWNLOAD SHOT
               </button>
               <button
                 onClick={() => { setResultImage(null); setFile(null); setPreview(null); }}
                 className={`rounded-box`}
-                style={{ background: 'var(--surface)', border: '1px solid var(--border)', padding: '1.25rem 3rem', cursor: 'pointer' }}
+                style={{ background: 'var(--surface)', border: '1px solid var(--border)', padding: '0.85rem 2rem', cursor: 'pointer', fontSize: '0.85rem' }}
               >
                 NEW PRODUCT
               </button>
@@ -414,7 +427,7 @@ export default function ClothingStudio() {
                 </div>
               </div>
 
-              <ConfigSection label="Gender Target" value={config.gender} options={["Female", "Male"]} onUpdate={v => updateConfig('gender', v)} />
+              <ConfigSection label="Gender Target" value={config.gender} options={["Female", "Male"]} onUpdate={v => { updateConfig('gender', v); updateConfig('pose', 'Best Match'); }} />
               <ConfigSection label="Model Identity" value={config.identity} options={["Western", "Indian"]} onUpdate={v => updateConfig('identity', v)} />
 
               {/* 3x3 Visual Pose Grid (Condition: Only show if Gender is selected) */}
@@ -423,6 +436,7 @@ export default function ClothingStudio() {
                   <h4 style={{ textAlign: 'left', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', color: '#fff' }}>Pose Selection</h4>
                   <div className="pose-grid">
                     {[
+                      { id: "Best Match", label: "Best Match", thumb: `/poses/best-match.png` },
                       { id: "Front", label: "Front", thumb: `/poses/${config.gender.toLowerCase()}/front.png` },
                       { id: "Side View", label: "Side View", thumb: `/poses/${config.gender.toLowerCase()}/side.png` },
                       { id: "Back", label: "Back", thumb: `/poses/${config.gender.toLowerCase()}/back.png` },

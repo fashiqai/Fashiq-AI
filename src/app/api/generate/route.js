@@ -113,7 +113,16 @@ export async function POST(req) {
 
     // Selection Logic: Use random variation if available, else use raw pose
     let targetPose = pose || "standing elegantly";
-    if (poseVariations[pose]) {
+    if (pose === "Best Match") {
+      // AI decides the best pose based on garment type, gender and background
+      const bestMatchOptions = [
+        `in the most flattering and commercially effective pose for this specific garment type, chosen to best showcase the cut, drape, and design details`,
+        `in an AI-selected optimal pose that maximises the visual appeal and product clarity of the garment for a ${gender} model in a ${background} setting`,
+        `in the ideal editorial pose determined by the garment's silhouette and style, ensuring maximum product visibility and natural body language`,
+        `in a pose naturally suited to this type of clothing, selected to highlight fit, fabric movement, and overall style for ${gender} fashion`,
+      ];
+      targetPose = bestMatchOptions[Math.floor(Math.random() * bestMatchOptions.length)];
+    } else if (poseVariations[pose]) {
       const options = poseVariations[pose];
       targetPose = options[Math.floor(Math.random() * options.length)];
     }

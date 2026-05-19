@@ -108,6 +108,19 @@ export default function JewelryStudio() {
     document.body.removeChild(a);
   };
 
+  // Intercept mobile back button when result is showing
+  useEffect(() => {
+    if (!resultImage) return;
+    window.history.pushState({ studioResult: true }, '');
+    const handlePopState = () => {
+      setResultImage(null);
+      setFile(null);
+      setPreview(null);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [resultImage]);
+
   // Preload jewelry styles to eliminate UI lag
   useEffect(() => {
     const preloadImages = () => {
