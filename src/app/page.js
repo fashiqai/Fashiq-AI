@@ -35,19 +35,41 @@ export default function LandingPage() {
     }
   ];
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    name: 'Fashiq AI',
-    operatingSystem: 'Windows, MacOS, Android, iOS',
-    applicationCategory: 'DesignApplication',
-    offers: {
-      '@type': 'Offer',
-      price: '49.00',
-      priceCurrency: 'USD',
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'Fashiq AI',
+      url: 'https://fashiqai.com',
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: 'https://fashiqai.com/?q={search_term_string}',
+        'query-input': 'required name=search_term_string',
+      },
     },
-    description: 'Transform your boutique with professional AI fashion photography.',
-  };
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'Fashiq AI',
+      url: 'https://fashiqai.com',
+      logo: 'https://fashiqai.com/logo.png',
+      description: 'AI-powered fashion photography platform for boutiques and e-commerce brands.',
+      sameAs: ['https://www.instagram.com/fashiq.ai'],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'Fashiq AI',
+      operatingSystem: 'Web',
+      applicationCategory: 'DesignApplication',
+      offers: {
+        '@type': 'Offer',
+        price: '49.00',
+        priceCurrency: 'USD',
+      },
+      description: 'Transform your boutique with professional AI fashion photography.',
+    },
+  ];
 
   return (
     <div className="landing-page" style={{ background: 'var(--background)' }}>
@@ -98,41 +120,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="landing-section animate-up">
-        <div className="split-layout">
-          <div className="section-visuals">
-            <div className="collage-grid">
-              {/* Pair 1: Emerald (Mobile Row 1) */}
-              <img src="/showcase/jewelry/IMG_20260411_150716.jpg" className="collage-item jew-raw-1" alt="Raw Emerald" />
-              <img src="/showcase/jewelry/fasionai-jewelry-1775900404244.png" className="collage-item jew-ai-1" alt="AI Emerald" />
-              
-              {/* Pair 2: Blue Ring (Mobile Row 2) */}
-              <img src="/showcase/jewelry/HAEI08g.webp" className="collage-item jew-raw-2" alt="Raw Blue Ring" />
-              <img src="/showcase/jewelry/fasionai-jewelry-1775916066741.png" className="collage-item jew-ai-2" alt="AI Blue Ring" />
-              
-              {/* Pair 3: Floral Necklace (Mobile Row 3) */}
-              <img src="/showcase/jewelry/gf.png" className="collage-item jew-raw-3" alt="Raw Floral" />
-              <img src="/showcase/jewelry/product_to_model_0.png" className="collage-item jew-ai-3" alt="AI Floral" />
-            </div>
-          </div>
-
-          <div className="section-content">
-            <p className="subtitle">PHOTOREALISTIC AI</p>
-            <h2>Jewellery photoshoots</h2>
-            <p className="description">
-              Skip the expensive logistics of traditional jewelry photography.
-              Generate professional model shots for your rings, necklaces, and earrings in seconds,
-              cutting costs while maintaining a premium brand aesthetic.
-            </p>
-            <div className="button-group">
-              <Link href="/login" className="generate-btn studio-nav-btn" style={{ margin: 0, textDecoration: 'none' }}>
-                Jewelry Studio
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Clothing Section (Mirrored) */}
       <section className="landing-section animate-up">
         <div className="split-layout reversed">
@@ -141,11 +128,11 @@ export default function LandingPage() {
               {/* Pair 1: Blue Top (Mobile Row 1) */}
               <img src="/showcase/clothing/6skaz_512.avif" className="collage-item clo-raw-1" alt="Raw Blue Top" />
               <img src="/showcase/clothing/fasionai-photoshoot-1775856101182.png" className="collage-item clo-ai-1" alt="AI Blue Top" />
-              
+
               {/* Pair 2: Teal Dress (Mobile Row 2) */}
               <img src="/showcase/clothing/Bold bridal elegance in the Pantone 2026 trend color_ _created with Midjourney ai_.jpg" className="collage-item clo-raw-2" alt="Raw Teal Dress" />
               <img src="/showcase/clothing/fasionai-photoshoot-1776971533473.png" className="collage-item clo-ai-2" alt="AI Teal Dress" />
-              
+
               {/* Pair 3: Maroon Dress (Mobile Row 3) */}
               <img src="/showcase/clothing/IMG_20260407_225659.jpg" className="collage-item clo-raw-3" alt="Raw Maroon Dress" />
               <img src="/showcase/clothing/fasionai-leaning-1775582990504.png" className="collage-item clo-ai-3" alt="AI Maroon Dress" />
@@ -163,6 +150,41 @@ export default function LandingPage() {
             <div className="button-group">
               <Link href="/login" className="generate-btn studio-nav-btn" style={{ margin: 0, textDecoration: 'none' }}>
                 Clothing Studio
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="landing-section animate-up">
+        <div className="split-layout">
+          <div className="section-visuals">
+            <div className="collage-grid">
+              {/* Pair 1: Emerald (Mobile Row 1) */}
+              <img src="/showcase/jewelry/IMG_20260411_150716.jpg" className="collage-item jew-raw-1" alt="Raw Emerald" />
+              <img src="/showcase/jewelry/fasionai-jewelry-1775900404244.png" className="collage-item jew-ai-1" alt="AI Emerald" />
+
+              {/* Pair 2: Blue Ring (Mobile Row 2) */}
+              <img src="/showcase/jewelry/HAEI08g.webp" className="collage-item jew-raw-2" alt="Raw Blue Ring" />
+              <img src="/showcase/jewelry/fasionai-jewelry-1775916066741.png" className="collage-item jew-ai-2" alt="AI Blue Ring" />
+
+              {/* Pair 3: Floral Necklace (Mobile Row 3) */}
+              <img src="/showcase/jewelry/gf.png" className="collage-item jew-raw-3" alt="Raw Floral" />
+              <img src="/showcase/jewelry/product_to_model_0.png" className="collage-item jew-ai-3" alt="AI Floral" />
+            </div>
+          </div>
+
+          <div className="section-content">
+            <p className="subtitle">PHOTOREALISTIC AI</p>
+            <h2>Jewellery photoshoots</h2>
+            <p className="description">
+              Skip the expensive logistics of traditional jewelry photography.
+              Generate professional model shots for your rings, necklaces, and earrings in seconds,
+              cutting costs while maintaining a premium brand aesthetic.
+            </p>
+            <div className="button-group">
+              <Link href="/login" className="generate-btn studio-nav-btn" style={{ margin: 0, textDecoration: 'none' }}>
+                Jewelry Studio
               </Link>
             </div>
           </div>

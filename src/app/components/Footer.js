@@ -26,10 +26,10 @@ export default function Footer() {
           <div className="footer-column">
             <h4>Studio</h4>
             <ul className="footer-links">
-              <li><Link href="/studio/clothing">Clothing Engine</Link></li>
+              <li><Link href="/studio/clothing">Clothing Studio</Link></li>
               <li><Link href="/login">Jewelry Studio</Link></li>
-              <li><Link href="/">Model Library</Link></li>
-              <li><Link href="/">Brand Assets</Link></li>
+              <li><Link href="/login">Model Library</Link></li>
+              <li><Link href="/login">Brand Assets</Link></li>
             </ul>
           </div>
 
@@ -47,8 +47,8 @@ export default function Footer() {
           <div className="footer-column">
             <h4>Support</h4>
             <ul className="footer-links">
-              <li><Link href="/">Contact Us</Link></li>
-              <li><Link href="/">Help Center</Link></li>
+              <li><Link href="/contact">Contact Us</Link></li>
+              <li><Link href="/contact">Help Center</Link></li>
             </ul>
           </div>
         </div>
