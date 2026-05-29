@@ -440,10 +440,48 @@ body {
 @media (max-width: 768px) {
   .choice-container {
     flex-direction: column;
+    gap: 1.5rem;
+    padding: 0 1rem;
+    width: 100%;
+  }
+
+  .choice-card {
+    flex-direction: row !important;
+    align-items: stretch;
+    min-height: 140px;
+    height: auto;
+  }
+
+  .choice-card:hover {
+    transform: translateY(-4px);
   }
 
   .choice-image {
-    height: 240px;
+    width: 38%;
+    height: auto !important;
+    min-height: 100%;
+    order: 2;
+    border-left: 1px solid var(--border);
+  }
+
+  .choice-content {
+    width: 62%;
+    order: 1;
+    padding: 1.25rem 1.5rem;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .choice-content h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .choice-content p {
+    font-size: 0.8rem;
+    line-height: 1.45;
   }
 }
 

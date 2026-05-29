@@ -163,15 +163,22 @@ export default function LoginPage() {
               onClick={handleGoogleLogin}
               style={{
                 width: "100%", padding: "1.25rem", borderRadius: "1rem",
-                border: "1px solid var(--border)", background: "var(--surface)",
+                border: "1px solid #e5e7eb", background: "#ffffff",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                gap: "0.75rem", cursor: "pointer", fontWeight: "500",
-                color: "var(--foreground)", transition: "background 0.2s",
+                gap: "0.85rem", cursor: "pointer", fontWeight: "600",
+                fontSize: "0.95rem", letterSpacing: "-0.01em",
+                color: "#1f2937", transition: "all 0.2s ease",
               }}
-              onMouseOver={(e) => e.currentTarget.style.background = "var(--background)"}
-              onMouseOut={(e) => e.currentTarget.style.background = "var(--surface)"}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = "#f9fafb";
+                e.currentTarget.style.borderColor = "#d1d5db";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = "#ffffff";
+                e.currentTarget.style.borderColor = "#e5e7eb";
+              }}
             >
-              <img src="https://www.google.com/favicon.ico" width="18" height="18" alt="Google" />
+              <img src="https://www.google.com/favicon.ico" width="20" height="20" alt="Google" />
               Continue with Google
             </button>
           </>
