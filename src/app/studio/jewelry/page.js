@@ -503,31 +503,32 @@ export default function JewelryStudio() {
               </button>
             )}
           </div>
+        </div>
 
-          {showSourcePicker && (
-            <>
-              <div onClick={() => setShowSourcePicker(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 2000, backdropFilter: 'blur(4px)' }} />
-              <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'var(--surface)', borderTop: '1px solid var(--border)', borderRadius: '1.5rem 1.5rem 0 0', padding: '2rem 2rem 3rem', zIndex: 2001, animation: 'slideUp 0.25s ease' }}>
-                <p style={{ fontSize: '0.75rem', letterSpacing: '0.12em', textTransform: 'uppercase', opacity: 0.4, marginBottom: '1.75rem', textAlign: 'center' }}>Select Image Source</p>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem' }}>
-                  <button onClick={() => { setShowSourcePicker(false); setTimeout(() => cameraInputRef.current?.click(), 100); }} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', color: 'var(--foreground)' }}>
-                    <div style={{ width: '64px', height: '64px', borderRadius: '1.25rem', background: 'rgba(255,255,255,0.07)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-                    </div>
-                    <span style={{ fontSize: '0.8rem', fontWeight: '500' }}>Camera</span>
-                  </button>
-                  <button onClick={() => { setShowSourcePicker(false); setTimeout(() => fileInputRef.current?.click(), 100); }} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', color: 'var(--foreground)' }}>
-                    <div style={{ width: '64px', height: '64px', borderRadius: '1.25rem', background: 'rgba(255,255,255,0.07)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                    </div>
-                    <span style={{ fontSize: '0.8rem', fontWeight: '500' }}>Photos</span>
-                  </button>
-                </div>
+        {showSourcePicker && (
+          <>
+            <div onClick={() => setShowSourcePicker(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 2000, backdropFilter: 'blur(4px)' }} />
+            <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'var(--surface)', borderTop: '1px solid var(--border)', borderRadius: '1.5rem 1.5rem 0 0', padding: '2rem 2rem 3rem', zIndex: 2001, animation: 'slideUp 0.25s ease' }}>
+              <p style={{ fontSize: '0.75rem', letterSpacing: '0.12em', textTransform: 'uppercase', opacity: 0.4, marginBottom: '1.75rem', textAlign: 'center' }}>Select Image Source</p>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem' }}>
+                <button onClick={() => { setShowSourcePicker(false); setTimeout(() => cameraInputRef.current?.click(), 100); }} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', color: 'var(--foreground)' }}>
+                  <div style={{ width: '64px', height: '64px', borderRadius: '1.25rem', background: 'rgba(255,255,255,0.07)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  </div>
+                  <span style={{ fontSize: '0.8rem', fontWeight: '500' }}>Camera</span>
+                </button>
+                <button onClick={() => { setShowSourcePicker(false); setTimeout(() => fileInputRef.current?.click(), 100); }} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', color: 'var(--foreground)' }}>
+                  <div style={{ width: '64px', height: '64px', borderRadius: '1.25rem', background: 'rgba(255,255,255,0.07)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                  </div>
+                  <span style={{ fontSize: '0.8rem', fontWeight: '500' }}>Photos</span>
+                </button>
               </div>
-            </>
-          )}
+            </div>
+          </>
+        )}
 
-          <style jsx>{`
+        <style jsx>{`
           @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
           .selection-group h4 {
@@ -555,7 +556,6 @@ export default function JewelryStudio() {
             box-shadow: 0 0 20px rgba(var(--accent-rgb, 180, 255, 0), 0.2);
           }
         `}</style>
-        </div>
       </main>
     </div>
   );

@@ -438,10 +438,14 @@ body {
 }
 
 @media (max-width: 768px) {
+  .selection-page {
+    padding: 3rem 1rem;
+  }
+
   .choice-container {
     flex-direction: column;
     gap: 1.5rem;
-    padding: 0 1rem;
+    padding: 0;
     width: 100%;
   }
 

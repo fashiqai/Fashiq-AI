@@ -18,8 +18,8 @@ export default function OnboardingPage() {
       // Save to profiles table
       const { error } = await supabase
         .from('profiles')
-        .upsert({ 
-          id: user.id, 
+        .upsert({
+          id: user.id,
           business_type: type,
           updated_at: new Date().toISOString()
         });
@@ -38,22 +38,22 @@ export default function OnboardingPage() {
   return (
     <div className="selection-page animate-up">
       <header className="header" style={{ marginBottom: '4rem' }}>
-        <p>WELCOME TO FASHION AI</p>
+        <p>WELCOME TO FASHIQ AI</p>
         <h1>What is your Business Type?</h1>
         <p style={{ opacity: 0.6, letterSpacing: 'normal', textTransform: 'none' }}>Select your niche to access tailor-made AI tools. We'll remember this for your next visit.</p>
       </header>
 
       <div className="choice-container">
         {/* Clothing Choice */}
-        <div 
-          className="choice-card" 
+        <div
+          className="choice-card"
           style={{ cursor: isSaving ? 'wait' : 'pointer', opacity: isSaving ? 0.7 : 1 }}
           onClick={() => !isSaving && handleSelection('clothing')}
         >
           <div className="choice-image">
-            <img 
-              src="/choice-clothing.png" 
-              alt="Clothing and Fashion" 
+            <img
+              src="/choice-clothing.png"
+              alt="Clothing and Fashion"
               onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&q=80&w=800"; }}
             />
           </div>
@@ -64,15 +64,15 @@ export default function OnboardingPage() {
         </div>
 
         {/* Jewelry Choice */}
-        <div 
-          className="choice-card" 
+        <div
+          className="choice-card"
           style={{ cursor: isSaving ? 'wait' : 'pointer', opacity: isSaving ? 0.7 : 1 }}
           onClick={() => !isSaving && handleSelection('jewelry')}
         >
           <div className="choice-image">
-            <img 
-              src="/choice-jewelry.png" 
-              alt="Jewelry and Ornaments" 
+            <img
+              src="/choice-jewelry.png"
+              alt="Jewelry and Ornaments"
               onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=800"; }}
             />
           </div>
