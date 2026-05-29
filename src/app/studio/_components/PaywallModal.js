@@ -45,18 +45,20 @@ export default function PaywallModal({ isOpen, onClose, onUpgrade, context = "fr
   useEffect(() => {
     if (!isOpen) return;
 
-    // Push a dummy state to history
-    window.history.pushState({ paywallOpen: true }, "");
+    // Set the hash to push a history entry safely without crashing Next.js
+    window.location.hash = "upgrade";
 
-    const handlePopState = () => {
-      onClose();
+    const handleHashChange = () => {
+      if (window.location.hash !== "#upgrade") {
+        onClose();
+      }
     };
 
-    window.addEventListener("popstate", handlePopState);
+    window.addEventListener("hashchange", handleHashChange);
     return () => {
-      window.removeEventListener("popstate", handlePopState);
-      // Clean up the dummy state if closed manually
-      if (window.history.state?.paywallOpen) {
+      window.removeEventListener("hashchange", handleHashChange);
+      // Clean up the hash if closed manually (without clicking browser back button)
+      if (window.location.hash === "#upgrade") {
         window.history.back();
       }
     };
