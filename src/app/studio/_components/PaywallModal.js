@@ -84,7 +84,7 @@ export default function PaywallModal({ isOpen, onClose, onUpgrade, context = "fr
         </button>
 
         {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
+        <div className="paywall-header" style={{ textAlign: "center" }}>
           <div style={{
             display: "inline-block",
             fontSize: "0.7rem",

@@ -1276,14 +1276,17 @@ body {
 
 .pricing-btn {
   width: 100%;
-  padding: 1.25rem;
+  padding: 1.15rem;
   border-radius: 1rem;
-  background: transparent;
-  border: 1px solid var(--border);
-  color: #fff;
-  font-weight: 600;
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  font-weight: 800;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   text-align: center;
   text-decoration: none;
 }
@@ -1295,8 +1298,16 @@ body {
 }
 
 .pricing-btn:hover {
-  background: #fff;
-  color: #000;
+  background: var(--accent);
+  color: #000000;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(190, 242, 100, 0.25);
+}
+
+.pricing-card.featured .pricing-btn:hover {
+  background: #ffffff;
+  color: #000000;
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15);
 }
 
 @media (max-width: 900px) {
@@ -1828,4 +1839,39 @@ body {
 @keyframes particleMove {
   from { background-position: 0 0; }
   to { background-position: 40px 40px; }
+}
+
+/* Paywall Modal Mobile Responsiveness */
+.paywall-header {
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 768px) {
+  .paywall-header {
+    margin-bottom: 1rem;
+  }
+  .pricing-card {
+    padding: 1.75rem 1.25rem !important;
+    border-radius: 1.75rem !important;
+  }
+  .plan-name {
+    font-size: 1.4rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  .plan-price {
+    font-size: 2.5rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+  .feature-list {
+    margin-bottom: 1.75rem !important;
+  }
+  .feature-item {
+    font-size: 0.85rem !important;
+    margin-bottom: 0.6rem !important;
+    gap: 0.75rem !important;
+  }
+  .pricing-btn {
+    padding: 0.95rem 1.25rem !important;
+    font-size: 0.75rem !important;
+  }
 }
