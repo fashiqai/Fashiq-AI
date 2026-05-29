@@ -23,24 +23,6 @@ const PRO_FEATURES = [
 export default function PaywallModal({ isOpen, onClose, onUpgrade, context = "free", creditsResetAt }) {
   const [loadingPlan, setLoadingPlan] = useState(null);
 
-  if (!isOpen) return null;
-
-  const handleUpgrade = async (plan) => {
-    setLoadingPlan(plan);
-    try {
-      await onUpgrade(plan);
-    } finally {
-      setLoadingPlan(null);
-    }
-  };
-
-  const isExhausted = context === "no_credits";
-  const isUpgrade = context === "upgrade"; // starter → pro
-
-  const resetDateStr = creditsResetAt
-    ? new Date(creditsResetAt).toLocaleDateString("en-US", { month: "long", day: "numeric" })
-    : null;
-
   // Intercept browser back button when the modal is open
   useEffect(() => {
     if (!isOpen) return;
@@ -63,6 +45,24 @@ export default function PaywallModal({ isOpen, onClose, onUpgrade, context = "fr
       }
     };
   }, [isOpen, onClose]);
+
+  const handleUpgrade = async (plan) => {
+    setLoadingPlan(plan);
+    try {
+      await onUpgrade(plan);
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
+
+  const isExhausted = context === "no_credits";
+  const isUpgrade = context === "upgrade"; // starter → pro
+
+  const resetDateStr = creditsResetAt
+    ? new Date(creditsResetAt).toLocaleDateString("en-US", { month: "long", day: "numeric" })
+    : null;
+
+  if (!isOpen) return null;
 
   return (
     <div
