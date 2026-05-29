@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const STARTER_FEATURES = [
   "150 Credits / month",
@@ -40,6 +40,27 @@ export default function PaywallModal({ isOpen, onClose, onUpgrade, context = "fr
   const resetDateStr = creditsResetAt
     ? new Date(creditsResetAt).toLocaleDateString("en-US", { month: "long", day: "numeric" })
     : null;
+
+  // Intercept browser back button when the modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Push a dummy state to history
+    window.history.pushState({ paywallOpen: true }, "");
+
+    const handlePopState = () => {
+      onClose();
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      // Clean up the dummy state if closed manually
+      if (window.history.state?.paywallOpen) {
+        window.history.back();
+      }
+    };
+  }, [isOpen, onClose]);
 
   return (
     <div

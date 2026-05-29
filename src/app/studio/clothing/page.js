@@ -97,7 +97,8 @@ export default function ClothingStudio() {
   useEffect(() => {
     if (!resultImage) return;
     window.history.pushState({ studioResult: true }, '');
-    const handlePopState = () => {
+    const handlePopState = (e) => {
+      if (e.state?.studioResult) return;
       setResultImage(null);
       setFile(null);
       setPreview(null);
