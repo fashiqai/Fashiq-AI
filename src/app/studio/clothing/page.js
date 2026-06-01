@@ -576,7 +576,7 @@ export default function ClothingStudio() {
           {/* Generate Trigger */}
           {!isGenerating && !resultImage && preview && (
             <button className="generate-btn" onClick={generatePhotoshoot} style={{ width: '100%', marginTop: '4rem' }}>
-              Transform Garment
+              Generate
             </button>
           )}
         </div>

@@ -500,7 +500,7 @@ export default function JewelryStudio() {
 
             {!isGenerating && !resultImage && preview && (
               <button className="generate-btn" onClick={generatePhotoshoot} style={{ width: '100%', marginTop: '4rem' }}>
-                Generate Hero Shot
+                Generate
               </button>
             )}
           </div>
