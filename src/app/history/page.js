@@ -60,19 +60,25 @@ export default function HistoryPage() {
     fetchHistory();
   }, []);
 
-  const handleDownloadClick = (imageUrl) => {
+  const handleDownloadClick = async (imageUrl) => {
     if (!isPaid) {
       setShowPaywall(true);
       return;
     }
-    // History downloads don't consume credits — credit was spent at generation time
-    const a = document.createElement("a");
-    a.href = imageUrl;
-    a.download = `fasionai-${Date.now()}.png`;
-    a.target = "_blank";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = `fashiq-${Date.now()}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+    } catch {
+      window.open(imageUrl, "_blank");
+    }
   };
 
   return (
