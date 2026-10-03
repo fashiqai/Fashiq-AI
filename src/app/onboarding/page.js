@@ -26,6 +26,11 @@ export default function OnboardingPage() {
 
       if (error) throw error;
 
+      if (typeof window !== "undefined") {
+        localStorage.setItem("fashiq_business_type", type);
+      }
+
+      router.refresh();
       router.push(`/studio/${type}`);
     } catch (err) {
       console.error(err);

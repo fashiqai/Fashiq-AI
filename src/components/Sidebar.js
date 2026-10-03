@@ -11,15 +11,40 @@ export default function Sidebar({ isOpen, onClose, subscription }) {
   const router = useRouter();
   const { isPaid, creditsRemaining, creditsResetAt } = subscription ?? {};
   const [userEmail, setUserEmail] = useState(null);
+  const [businessType, setBusinessType] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("fashiq_business_type") || null;
+    }
+    return null;
+  });
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(async ({ data }) => {
       setUserEmail(data?.user?.email ?? null);
+      if (data?.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("business_type")
+          .eq("id", data.user.id)
+          .single();
+        if (profile?.business_type) {
+          setBusinessType(profile.business_type);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("fashiq_business_type", profile.business_type);
+          }
+        }
+      }
     });
   }, []);
+
+  // Determine active studio
+  const activeStudio = businessType || (pathname?.includes("jewelry") ? "jewelry" : "clothing");
+  const studioLabel = activeStudio === "jewelry" ? "Jewellery Studio" : "Clothing Studio";
+  const studioHref = `/studio/${activeStudio}`;
+  const isStudioActive = pathname?.startsWith("/studio");
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
@@ -102,23 +127,87 @@ export default function Sidebar({ isOpen, onClose, subscription }) {
               </Link>
             </li>
 
-            <li>
-              <Link href="/onboarding" onClick={onClose} style={{ 
+            <li style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Link href={studioHref} onClick={onClose} style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: '1rem', 
                 textDecoration: 'none', 
-                color: 'var(--muted)', 
+                color: isStudioActive ? 'var(--foreground)' : 'var(--muted)', 
+                fontWeight: isStudioActive ? '600' : '400',
+                fontSize: '0.95rem',
+                transition: 'color 0.2s',
+                flex: 1
+              }}>
+                {activeStudio === "jewelry" ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="6 3 18 3 22 9 12 22 2 9"></polygon>
+                    <line x1="2" y1="9" x2="22" y2="9"></line>
+                    <line x1="12" y1="22" x2="7.5" y2="9"></line>
+                    <line x1="12" y1="22" x2="16.5" y2="9"></line>
+                  </svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path>
+                  </svg>
+                )}
+                {studioLabel}
+              </Link>
+
+              {/* Three dots to change studio */}
+              <Link
+                href="/onboarding"
+                onClick={onClose}
+                title="Change Studio (Clothing / Jewellery)"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '30px',
+                  height: '30px',
+                  borderRadius: '0.5rem',
+                  color: 'var(--muted)',
+                  textDecoration: 'none',
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  transition: 'all 0.2s',
+                  marginLeft: '0.5rem'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.color = 'var(--foreground)';
+                  e.currentTarget.style.borderColor = 'var(--accent)';
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.color = 'var(--muted)';
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <circle cx="19" cy="12" r="1"></circle>
+                  <circle cx="5" cy="12" r="1"></circle>
+                </svg>
+              </Link>
+            </li>
+
+            <li>
+              <Link href="/personas" onClick={onClose} style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '1rem', 
+                textDecoration: 'none', 
+                color: pathname === '/personas' ? 'var(--foreground)' : 'var(--muted)',
+                fontWeight: pathname === '/personas' ? '600' : '400',
                 fontSize: '0.95rem',
                 transition: 'color 0.2s'
               }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17 2.1l4 4-4 4"></path>
-                  <path d="M3 12.2v-2a4 4 0 0 1 4-4h12.8"></path>
-                  <path d="M7 22.3l-4-4 4-4"></path>
-                  <path d="M21 12.2v2a4 4 0 0 1-4 4H8.2"></path>
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
                 </svg>
-                Switch Studio
+                Model Persona
               </Link>
             </li>
 

@@ -43,8 +43,25 @@ export default function ClothingStudio() {
     pose: "Best Match",
     background: "Indoor",
     studioColor: "White",
-    productDescription: ""
+    productDescription: "",
+    face_reference: null,
   });
+
+  const [savedPersonas, setSavedPersonas] = useState([]);
+  const [selectedPersonaId, setSelectedPersonaId] = useState("ai_default");
+
+  useEffect(() => {
+    try {
+      if (typeof window !== "undefined") {
+        const saved = localStorage.getItem("fashiq_model_personas");
+        if (saved) {
+          setSavedPersonas(JSON.parse(saved));
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load saved personas:", e);
+    }
+  }, []);
 
   // Show success banner when payment completes and subscription is active
   useEffect(() => {
@@ -426,25 +443,157 @@ export default function ClothingStudio() {
                 </div>
               </div>
 
-              <ConfigSection label="Gender Target" value={config.gender} options={["Female", "Male"]} onUpdate={v => { updateConfig('gender', v); updateConfig('pose', 'Best Match'); }} />
-              <ConfigSection label="Model Identity" value={config.identity} options={["Western", "Indian"]} onUpdate={v => updateConfig('identity', v)} />
+              {/* Model Persona Selection Section (Directly Below Product Description) */}
+              <div className="selection-group" style={{ marginBottom: '2rem', width: '100%' }}>
+                <h4 style={{ textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', marginBottom: '1.25rem', color: '#fff' }}>MODEL PERSONA</h4>
+                <div className="pose-grid">
+                  
+                  {/* 1. AI Default Card */}
+                  <div
+                    className={`pose-card ${selectedPersonaId === "ai_default" ? 'active' : ''}`}
+                    onClick={() => {
+                      setSelectedPersonaId("ai_default");
+                      updateConfig("face_reference", null);
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="pose-thumb" style={{
+                      position: 'relative',
+                      width: '100%',
+                      aspectRatio: '1 / 1.1',
+                      background: selectedPersonaId === "ai_default" ? 'rgba(190,242,100,0.08)' : 'rgba(255,255,255,0.03)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '2.5rem',
+                      color: selectedPersonaId === "ai_default" ? 'var(--accent)' : 'var(--muted)'
+                    }}>
+                      ✨
+                    </div>
+                    <span className="pose-label" style={{
+                      padding: '0.6rem 0.4rem',
+                      fontSize: '0.75rem',
+                      fontWeight: '600',
+                      color: selectedPersonaId === "ai_default" ? 'var(--accent)' : 'inherit',
+                      textAlign: 'center'
+                    }}>
+                      AI default
+                    </span>
+                  </div>
 
-              {/* 3x3 Visual Pose Grid (Condition: Only show if Gender is selected) */}
-              {config.gender && (
+                  {/* 2. Saved Custom Personas Cards */}
+                  {savedPersonas.map((persona) => {
+                    const isSelected = selectedPersonaId === persona.id;
+                    return (
+                      <div
+                        key={persona.id}
+                        className={`pose-card ${isSelected ? 'active' : ''}`}
+                        onClick={() => {
+                          setSelectedPersonaId(persona.id);
+                          updateConfig("face_reference", persona.imageUrl);
+                        }}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <div className="pose-thumb" style={{ position: 'relative', width: '100%', aspectRatio: '1 / 1.1' }}>
+                          <img
+                            src={persona.imageUrl}
+                            alt={persona.name}
+                            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                          />
+                          {isSelected && (
+                            <div style={{
+                              position: 'absolute', top: '6px', right: '6px',
+                              width: '22px', height: '22px', borderRadius: '50%',
+                              background: 'var(--accent)', color: '#000',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              fontSize: '0.75rem', fontWeight: 'bold',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+                              zIndex: 2
+                            }}>
+                              ✓
+                            </div>
+                          )}
+                        </div>
+                        <span className="pose-label" style={{
+                          padding: '0.6rem 0.4rem',
+                          fontSize: '0.75rem',
+                          fontWeight: '600',
+                          color: isSelected ? 'var(--accent)' : 'inherit',
+                          textAlign: 'center',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          width: '100%'
+                        }}>
+                          {persona.name}
+                        </span>
+                      </div>
+                    );
+                  })}
+
+                  {/* 3. Create New Persona Card */}
+                  <Link
+                    href="/personas"
+                    className="pose-card"
+                    style={{
+                      textDecoration: 'none',
+                      border: '1.5px dashed rgba(255,255,255,0.2)',
+                      background: 'rgba(255,255,255,0.02)',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <div className="pose-thumb" style={{
+                      position: 'relative',
+                      width: '100%',
+                      aspectRatio: '1 / 1.1',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '2rem',
+                      color: 'var(--foreground)',
+                      opacity: 0.8
+                    }}>
+                      +
+                    </div>
+                    <span className="pose-label" style={{
+                      padding: '0.6rem 0.4rem',
+                      fontSize: '0.75rem',
+                      fontWeight: '500',
+                      color: 'var(--muted)',
+                      textAlign: 'center'
+                    }}>
+                      create new
+                    </span>
+                  </Link>
+
+                </div>
+              </div>
+
+              {/* Conditionally show Gender Target & Model Identity ONLY when AI Default is selected */}
+              {selectedPersonaId === "ai_default" && (
+                <>
+                  <ConfigSection label="Gender Target" value={config.gender} options={["Female", "Male"]} onUpdate={v => { updateConfig('gender', v); updateConfig('pose', 'Best Match'); }} />
+                  <ConfigSection label="Model Identity" value={config.identity} options={["Western", "Indian"]} onUpdate={v => updateConfig('identity', v)} />
+                </>
+              )}
+
+              {/* 3x3 Visual Pose Grid */}
+              {(config.gender || selectedPersonaId !== "ai_default") && (
                 <div className="selection-group">
                   <h4 style={{ textAlign: 'left', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', color: '#fff' }}>Pose Selection</h4>
                   <div className="pose-grid">
                     {[
                       { id: "Best Match", label: "Best Match", thumb: `/poses/best-match.png` },
-                      { id: "Front", label: "Front", thumb: `/poses/${config.gender.toLowerCase()}/front.png` },
-                      { id: "Side View", label: "Side View", thumb: `/poses/${config.gender.toLowerCase()}/side.png` },
-                      { id: "Back", label: "Back", thumb: `/poses/${config.gender.toLowerCase()}/back.png` },
-                      { id: "Walking", label: "Walking", thumb: `/poses/${config.gender.toLowerCase()}/walking.png` },
-                      { id: "Sitting", label: "Sitting", thumb: `/poses/${config.gender.toLowerCase()}/sitting.png` },
-                      { id: "Leaning", label: "Leaning", thumb: `/poses/${config.gender.toLowerCase()}/leaning.png` },
-                      { id: "Hands on Hips", label: "Hips-On", thumb: `/poses/${config.gender.toLowerCase()}/hips.png` },
-                      { id: "Close up (Full)", label: "Close-Up", thumb: `/poses/${config.gender.toLowerCase()}/closeup_full.png` },
-                      { id: "Close up (Half Face)", label: "Focus On Cloth", thumb: `/poses/${config.gender.toLowerCase()}/closeup_half.png` },
+                      { id: "Front", label: "Front", thumb: `/poses/${(config.gender || 'female').toLowerCase()}/front.png` },
+                      { id: "Side View", label: "Side View", thumb: `/poses/${(config.gender || 'female').toLowerCase()}/side.png` },
+                      { id: "Back", label: "Back", thumb: `/poses/${(config.gender || 'female').toLowerCase()}/back.png` },
+                      { id: "Walking", label: "Walking", thumb: `/poses/${(config.gender || 'female').toLowerCase()}/walking.png` },
+                      { id: "Sitting", label: "Sitting", thumb: `/poses/${(config.gender || 'female').toLowerCase()}/sitting.png` },
+                      { id: "Leaning", label: "Leaning", thumb: `/poses/${(config.gender || 'female').toLowerCase()}/leaning.png` },
+                      { id: "Hands on Hips", label: "Hips-On", thumb: `/poses/${(config.gender || 'female').toLowerCase()}/hips.png` },
+                      { id: "Close up (Full)", label: "Close-Up", thumb: `/poses/${(config.gender || 'female').toLowerCase()}/closeup_full.png` },
+                      { id: "Close up (Half Face)", label: "Focus On Cloth", thumb: `/poses/${(config.gender || 'female').toLowerCase()}/closeup_half.png` },
                     ].map(p => (
                       <div
                         key={p.id}

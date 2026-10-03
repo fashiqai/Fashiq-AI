@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
-    const { garment_image, gender, identity, pose, background, studioColor, style, jewelryType, business_type = "clothing", photoshootOption, productDescription, surface } = await req.json();
+    const { garment_image, gender, identity, pose, background, studioColor, style, jewelryType, business_type = "clothing", photoshootOption, productDescription, surface, face_reference } = await req.json();
 
     if (!garment_image) {
       return NextResponse.json({ error: "No product image provided" }, { status: 400 });
@@ -175,22 +175,51 @@ export async function POST(req) {
 
     const year = new Date().getFullYear();
 
+    // Check if a custom model persona face reference is provided
+    const hasFaceReference = Boolean(face_reference && typeof face_reference === "string" && face_reference.trim().length > 0);
+
     // Construct the Final Prompt
     let finalPrompt = "";
-    if (business_type === "jewelry") {
-      finalPrompt = `A high-end ${year} luxury jewelry catalog photoshoot, ${compositionStyle}, wearing ${categoryKeywords}, shot on a ${gender} model. ${randomVibe}, sharp focus on product, high-end gemstone brilliance, realistic skin textures, 8k resolution, masterpiece.`;
+    if (hasFaceReference) {
+      // PROMPT STRATEGY FOR CUSTOM MODEL PERSONA FACE:
+      // Omit text ethnicity/identity to prevent prompt clash with reference face image.
+      // Explicitly guide FASHN.ai to preserve facial structure, skin tone, and features from the reference face.
+      const genderLabel = gender ? `${gender} model` : "fashion model";
+      if (business_type === "jewelry") {
+        finalPrompt = `A high-end ${year} luxury jewelry catalog photoshoot, ${compositionStyle}, featuring the model with exact facial features, skin tone, and identity matching the reference face, wearing ${categoryKeywords}. ${randomVibe}, sharp focus on product, high-end gemstone brilliance, realistic skin textures, 8k resolution, masterpiece.`;
+      } else {
+        const studioColorPrompts = {
+          "White":      "pure white seamless studio backdrop",
+          "Light Grey": "neutral light grey seamless studio backdrop",
+          "Warm Beige": "warm beige seamless studio backdrop",
+          "Soft Pink":  "soft pastel pink seamless studio backdrop",
+          "Black":      "deep black seamless studio backdrop",
+        };
+        const backgroundPrompt = background === "Studio"
+          ? `a minimalist ${studioColorPrompts[studioColor] || "white seamless studio backdrop"}, no props, no distractions, clean product-focused studio environment`
+          : `a professional ${background} setting`;
+        finalPrompt = `A luxury ${year} fashion photoshoot, a ${genderLabel} with exact facial features, facial structure, skin tone, and identity matching the reference face, ${compositionStyle}, ${backgroundPrompt}. ${randomVibe}, natural skin pores, realistic micro-expressions, seamless head-to-body blending, avoid plastic look, hyper-realistic, masterpiece.`;
+      }
     } else {
-      const studioColorPrompts = {
-        "White":      "pure white seamless studio backdrop",
-        "Light Grey": "neutral light grey seamless studio backdrop",
-        "Warm Beige": "warm beige seamless studio backdrop",
-        "Soft Pink":  "soft pastel pink seamless studio backdrop",
-        "Black":      "deep black seamless studio backdrop",
-      };
-      const backgroundPrompt = background === "Studio"
-        ? `a minimalist ${studioColorPrompts[studioColor] || "white seamless studio backdrop"}, no props, no distractions, clean product-focused studio environment`
-        : `a professional ${background} setting`;
-      finalPrompt = `A luxury ${year} fashion photoshoot, a ${gender} model with ${identity} features, ${compositionStyle}, ${backgroundPrompt}. ${randomVibe}, natural skin pores, realistic micro-expressions, avoid plastic look, hyper-realistic, masterpiece.`;
+      // PROMPT STRATEGY FOR DEFAULT AI MODEL (No face reference):
+      const modelGenderText = gender ? `${gender} model` : "fashion model";
+      const identityText = identity ? `${identity} features, ` : "";
+
+      if (business_type === "jewelry") {
+        finalPrompt = `A high-end ${year} luxury jewelry catalog photoshoot, ${compositionStyle}, wearing ${categoryKeywords}, shot on a ${modelGenderText}. ${randomVibe}, sharp focus on product, high-end gemstone brilliance, realistic skin textures, 8k resolution, masterpiece.`;
+      } else {
+        const studioColorPrompts = {
+          "White":      "pure white seamless studio backdrop",
+          "Light Grey": "neutral light grey seamless studio backdrop",
+          "Warm Beige": "warm beige seamless studio backdrop",
+          "Soft Pink":  "soft pastel pink seamless studio backdrop",
+          "Black":      "deep black seamless studio backdrop",
+        };
+        const backgroundPrompt = background === "Studio"
+          ? `a minimalist ${studioColorPrompts[studioColor] || "white seamless studio backdrop"}, no props, no distractions, clean product-focused studio environment`
+          : `a professional ${background} setting`;
+        finalPrompt = `A luxury ${year} fashion photoshoot, a ${modelGenderText} with ${identityText}${compositionStyle}, ${backgroundPrompt}. ${randomVibe}, natural skin pores, realistic micro-expressions, avoid plastic look, hyper-realistic, masterpiece.`;
+      }
     }
 
     const response = await fetch("https://api.fashn.ai/v1/run", {
@@ -206,7 +235,8 @@ export async function POST(req) {
           prompt: finalPrompt,
           output_format: "png",
           generation_mode: generationMode,
-          return_base64: false
+          return_base64: false,
+          ...(hasFaceReference ? { face_reference: face_reference.trim() } : {}),
         },
       }),
     });
