@@ -133,8 +133,19 @@ export default function ModelPersonasPage() {
     }, 4000);
   };
 
+  // Helper to trigger native file explorer synchronously on user gesture
+  const triggerFileUpload = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+    setTimeout(() => {
+      setShowUploadModal(false);
+    }, 150);
+  };
+
   // Upload Photo from Computer
   const handleFileChange = async (e) => {
+    setShowUploadModal(false);
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) return;
 
@@ -382,6 +393,10 @@ export default function ModelPersonasPage() {
                 value={pendingUploadName}
                 onChange={(e) => setPendingUploadName(e.target.value)}
                 onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    triggerFileUpload();
+                  }
                   if (e.key === "Escape") {
                     setShowUploadModal(false);
                     setPendingUploadName("");
@@ -407,6 +422,7 @@ export default function ModelPersonasPage() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.75rem" }}>
                 {/* Cancel — bottom left */}
                 <button
+                  type="button"
                   onClick={() => { setShowUploadModal(false); setPendingUploadName(""); }}
                   style={{
                     background: "transparent",
@@ -423,11 +439,10 @@ export default function ModelPersonasPage() {
                   Cancel
                 </button>
 
-                {/* Upload — bottom right: use <label htmlFor> so the file picker opens as a
-                    direct user gesture in all browsers (avoids programmatic .click() blocking) */}
-                <label
-                  htmlFor="model-photo-input"
-                  onClick={() => setShowUploadModal(false)}
+                {/* Upload Photo — bottom right: triggers native file explorer synchronously on user gesture */}
+                <button
+                  type="button"
+                  onClick={triggerFileUpload}
                   style={{
                     background: "linear-gradient(135deg, var(--accent) 0%, #a3e635 100%)",
                     border: "none",
@@ -453,7 +468,7 @@ export default function ModelPersonasPage() {
                     <line x1="12" y1="3" x2="12" y2="15"></line>
                   </svg>
                   Upload Photo
-                </label>
+                </button>
               </div>
             </div>
           </div>
