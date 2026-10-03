@@ -66,6 +66,10 @@ export default function ModelPersonasPage() {
   const [toastMessage, setToastMessage] = useState(null);
   const [previewPersona, setPreviewPersona] = useState(null);
 
+  // Upload Naming Modal State
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [pendingUploadName, setPendingUploadName] = useState("");
+
   // AI Persona Creator State
   const [aiForm, setAiForm] = useState({
     name: "Persona #1",
@@ -139,6 +143,9 @@ export default function ModelPersonasPage() {
       return;
     }
 
+    // Determine the name: use user-entered name or fallback
+    const modelName = pendingUploadName.trim() || `Model ${personas.length + 1}`;
+
     setIsUploading(true);
     try {
       const reader = new FileReader();
@@ -149,7 +156,7 @@ export default function ModelPersonasPage() {
 
           const newPersona = {
             id: `persona_${Date.now()}`,
-            name: `Model ${personas.length + 1}`,
+            name: modelName,
             imageUrl: compressedBase64,
             source: "Uploaded",
             createdAt: new Date().toISOString(),
@@ -157,12 +164,13 @@ export default function ModelPersonasPage() {
 
           const updated = [newPersona, ...personas];
           savePersonas(updated);
-          showToast("Model photo uploaded successfully!");
+          showToast(`"${modelName}" uploaded successfully!`);
         } catch (err) {
           console.error("Compression error:", err);
           showToast("Failed to process image. Please try another photo.");
         } finally {
           setIsUploading(false);
+          setPendingUploadName("");
           if (fileInputRef.current) fileInputRef.current.value = "";
         }
       };
@@ -316,7 +324,7 @@ export default function ModelPersonasPage() {
           </div>
         )}
 
-        {/* Hidden File Input for direct photo upload */}
+        {/* Hidden File Input for photo upload */}
         <input
           ref={fileInputRef}
           type="file"
@@ -324,6 +332,134 @@ export default function ModelPersonasPage() {
           style={{ display: "none" }}
           onChange={handleFileChange}
         />
+
+        {/* ===== Upload Naming Modal ===== */}
+        {showUploadModal && (
+          <div
+            onClick={(e) => { if (e.target === e.currentTarget) { setShowUploadModal(false); setPendingUploadName(""); } }}
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 9999,
+              background: "rgba(0,0,0,0.7)",
+              backdropFilter: "blur(8px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "1rem",
+            }}
+          >
+            <div
+              style={{
+                background: "#18181b",
+                border: "1px solid rgba(255,255,255,0.1)",
+                borderRadius: "1.25rem",
+                padding: "1.75rem 1.5rem 1.4rem",
+                width: "100%",
+                maxWidth: "340px",
+                boxShadow: "0 24px 60px rgba(0,0,0,0.6)",
+                display: "flex",
+                flexDirection: "column",
+                gap: "1.25rem",
+              }}
+            >
+              {/* Modal Title */}
+              <div>
+                <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: "600", color: "#fff", letterSpacing: "-0.01em" }}>
+                  Name your model
+                </h3>
+                <p style={{ margin: "0.35rem 0 0", fontSize: "0.78rem", color: "var(--muted)" }}>
+                  Give this model a name before uploading her photo.
+                </p>
+              </div>
+
+              {/* Name Input */}
+              <input
+                autoFocus
+                type="text"
+                placeholder="e.g. Priya, Sarah, Model 1..."
+                value={pendingUploadName}
+                onChange={(e) => setPendingUploadName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    setShowUploadModal(false);
+                    fileInputRef.current?.click();
+                  } else if (e.key === "Escape") {
+                    setShowUploadModal(false);
+                    setPendingUploadName("");
+                  }
+                }}
+                style={{
+                  width: "100%",
+                  padding: "0.7rem 1rem",
+                  borderRadius: "0.75rem",
+                  background: "rgba(255,255,255,0.05)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  color: "#fff",
+                  fontSize: "0.9rem",
+                  outline: "none",
+                  boxSizing: "border-box",
+                  transition: "border-color 0.2s",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
+                onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.12)")}
+              />
+
+              {/* Action Buttons Row */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.75rem" }}>
+                {/* Cancel — bottom left */}
+                <button
+                  onClick={() => { setShowUploadModal(false); setPendingUploadName(""); }}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "var(--muted)",
+                    fontSize: "0.85rem",
+                    cursor: "pointer",
+                    padding: "0.4rem 0",
+                    transition: "color 0.2s",
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.color = "#fff")}
+                  onMouseOut={(e) => (e.currentTarget.style.color = "var(--muted)")}
+                >
+                  Cancel
+                </button>
+
+                {/* Upload — bottom right */}
+                <button
+                  onClick={() => {
+                    setShowUploadModal(false);
+                    fileInputRef.current?.click();
+                  }}
+                  style={{
+                    background: "linear-gradient(135deg, var(--accent) 0%, #a3e635 100%)",
+                    border: "none",
+                    color: "#0a0a0c",
+                    fontSize: "0.85rem",
+                    fontWeight: "700",
+                    padding: "0.55rem 1.4rem",
+                    borderRadius: "100px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.45rem",
+                    boxShadow: "0 4px 16px rgba(190,242,100,0.25)",
+                    transition: "transform 0.15s, box-shadow 0.15s",
+                  }}
+                  onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 8px 20px rgba(190,242,100,0.35)"; }}
+                  onMouseOut={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(190,242,100,0.25)"; }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  Upload Photo
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ========================================================================= */}
         {/* VIEW 1: MAIN GALLERY & UPLOAD VIEW (Matching User Paper Sketch)            */}
@@ -549,9 +685,12 @@ export default function ModelPersonasPage() {
               maxWidth: "480px",
               margin: "0 auto",
             }}>
-              {/* Button 1: Upload a Model Photo */}
+              {/* Button 1: Upload a Model Photo — opens naming modal first */}
               <button
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() => {
+                  setPendingUploadName(`Model ${personas.length + 1}`);
+                  setShowUploadModal(true);
+                }}
                 disabled={isUploading}
                 style={{
                   width: "100%",
