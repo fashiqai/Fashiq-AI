@@ -133,16 +133,6 @@ export default function ModelPersonasPage() {
     }, 4000);
   };
 
-  // Helper to trigger native file explorer synchronously on user gesture
-  const triggerFileUpload = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-    setTimeout(() => {
-      setShowUploadModal(false);
-    }, 150);
-  };
-
   // Upload Photo from Computer
   const handleFileChange = async (e) => {
     setShowUploadModal(false);
@@ -395,7 +385,7 @@ export default function ModelPersonasPage() {
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
-                    triggerFileUpload();
+                    if (fileInputRef.current) fileInputRef.current.click();
                   }
                   if (e.key === "Escape") {
                     setShowUploadModal(false);
@@ -439,10 +429,9 @@ export default function ModelPersonasPage() {
                   Cancel
                 </button>
 
-                {/* Upload Photo — bottom right: triggers native file explorer synchronously on user gesture */}
-                <button
-                  type="button"
-                  onClick={triggerFileUpload}
+                {/* Upload Photo — pure HTML label linking natively to model-photo-input (zero JS interceptors!) */}
+                <label
+                  htmlFor="model-photo-input"
                   style={{
                     background: "linear-gradient(135deg, var(--accent) 0%, #a3e635 100%)",
                     border: "none",
@@ -468,7 +457,7 @@ export default function ModelPersonasPage() {
                     <line x1="12" y1="3" x2="12" y2="15"></line>
                   </svg>
                   Upload Photo
-                </button>
+                </label>
               </div>
             </div>
           </div>
