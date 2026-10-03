@@ -324,8 +324,9 @@ export default function ModelPersonasPage() {
           </div>
         )}
 
-        {/* Hidden File Input for photo upload */}
+        {/* Hidden File Input for photo upload — id used by label in modal for direct trigger */}
         <input
+          id="model-photo-input"
           ref={fileInputRef}
           type="file"
           accept="image/*"
@@ -373,18 +374,15 @@ export default function ModelPersonasPage() {
                 </p>
               </div>
 
-              {/* Name Input */}
+              {/* Name Input — starts blank, no pre-filled name */}
               <input
                 autoFocus
                 type="text"
-                placeholder="e.g. Priya, Sarah, Model 1..."
+                placeholder="e.g. Priya, Sarah, Aiden..."
                 value={pendingUploadName}
                 onChange={(e) => setPendingUploadName(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    setShowUploadModal(false);
-                    fileInputRef.current?.click();
-                  } else if (e.key === "Escape") {
+                  if (e.key === "Escape") {
                     setShowUploadModal(false);
                     setPendingUploadName("");
                   }
@@ -425,12 +423,11 @@ export default function ModelPersonasPage() {
                   Cancel
                 </button>
 
-                {/* Upload — bottom right */}
-                <button
-                  onClick={() => {
-                    setShowUploadModal(false);
-                    fileInputRef.current?.click();
-                  }}
+                {/* Upload — bottom right: use <label htmlFor> so the file picker opens as a
+                    direct user gesture in all browsers (avoids programmatic .click() blocking) */}
+                <label
+                  htmlFor="model-photo-input"
+                  onClick={() => setShowUploadModal(false)}
                   style={{
                     background: "linear-gradient(135deg, var(--accent) 0%, #a3e635 100%)",
                     border: "none",
@@ -445,6 +442,7 @@ export default function ModelPersonasPage() {
                     gap: "0.45rem",
                     boxShadow: "0 4px 16px rgba(190,242,100,0.25)",
                     transition: "transform 0.15s, box-shadow 0.15s",
+                    userSelect: "none",
                   }}
                   onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 8px 20px rgba(190,242,100,0.35)"; }}
                   onMouseOut={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(190,242,100,0.25)"; }}
@@ -455,7 +453,7 @@ export default function ModelPersonasPage() {
                     <line x1="12" y1="3" x2="12" y2="15"></line>
                   </svg>
                   Upload Photo
-                </button>
+                </label>
               </div>
             </div>
           </div>
@@ -688,7 +686,7 @@ export default function ModelPersonasPage() {
               {/* Button 1: Upload a Model Photo — opens naming modal first */}
               <button
                 onClick={() => {
-                  setPendingUploadName(`Model ${personas.length + 1}`);
+                  setPendingUploadName("");
                   setShowUploadModal(true);
                 }}
                 disabled={isUploading}
