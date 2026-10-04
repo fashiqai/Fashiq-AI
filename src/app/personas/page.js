@@ -6,6 +6,7 @@ import Sidebar from "@/components/Sidebar";
 import { compressImage } from "@/utils/imageCompression";
 import { useSubscription } from "@/hooks/useSubscription";
 import PaywallModal from "@/app/studio/_components/PaywallModal";
+import PersonaLoader from "@/app/components/PersonaLoader";
 
 const LOCAL_STORAGE_KEY = "fashiq_model_personas";
 
@@ -82,7 +83,7 @@ export default function ModelPersonasPage() {
     vibe: "High-Fashion Editorial",
     expression: "Confident Neutral",
     customPrompt: "",
-    count: 2,
+    count: 1,
   });
 
   const [isGeneratingAi, setIsGeneratingAi] = useState(false);
@@ -1183,40 +1184,8 @@ export default function ModelPersonasPage() {
                 {/* Live Output Container */}
                 <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                   
-                  {/* State A: Generating Loading Shimmer */}
-                  {isGeneratingAi && (
-                    <div style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: "1.25rem",
-                      padding: "1rem 0",
-                    }}>
-                      {[1, 2].map((n) => (
-                        <div
-                          key={`loading_${n}`}
-                          style={{
-                            aspectRatio: "3/4",
-                            borderRadius: "1.25rem",
-                            background: "linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 100%)",
-                            border: "1px solid var(--border)",
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "0.75rem",
-                            animation: "pulse 1.5s infinite",
-                          }}
-                        >
-                          <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "rgba(190, 242, 100, 0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            ✨
-                          </div>
-                          <span style={{ fontSize: "0.75rem", color: "var(--muted)" }}>
-                            Rendering #{n}...
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  {/* State A: Generating — Premium animated loader */}
+                  {isGeneratingAi && <PersonaLoader />}
 
                   {/* State B: Empty / Idle State */}
                   {!isGeneratingAi && aiCandidates.length === 0 && (
