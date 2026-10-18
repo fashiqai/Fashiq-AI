@@ -9,6 +9,33 @@ import { compressImage } from "@/utils/imageCompression";
 import { useSubscription } from "@/hooks/useSubscription";
 import PaywallModal from "@/app/studio/_components/PaywallModal";
 
+const JEWELRY_DATA = {
+  "Auto": { styles: [] },
+  "Necklace": {
+    styles: [
+      { id: "Editorial High-Fashion", label: "Editorial", sub: "Full face & portrait", image: "/styles/jewelry/necklace/necklace-1.webp" },
+      { id: "Cinematic Half-Cut", label: "Cinematic", sub: "Half-face close-up", image: "/styles/jewelry/necklace/necklace-2.webp" },
+      { id: "Luminous Detail", label: "Luminous", sub: "Macro product focus", image: "/styles/jewelry/necklace/necklace-3.webp" },
+    ]
+  },
+  "Earrings": {
+    styles: [
+      { id: "Editorial Earring", label: "Editorial", sub: "Full face & portrait", image: "/styles/jewelry/earring/earring-1.webp" },
+      { id: "Macro Ear", label: "Macro Detail", sub: "Close-up focus", image: "/styles/jewelry/earring/earring-2.webp" },
+    ]
+  },
+  "Ring on finger": {
+    styles: [
+      { id: "Classic Editorial Ring", label: "Classic Editorial", sub: "Elegant hand-to-face", image: "/styles/jewelry/ring/ring-1.webp" },
+      { id: "Cinematic Glow Ring", label: "Cinematic Glow", sub: "Warm editorial focus", image: "/styles/jewelry/ring/ring-2.webp" },
+      { id: "Minimalist Product Ring", label: "Minimalist Product", sub: "Clean fabric backdrop", image: "/styles/jewelry/ring/ring-3.webp" },
+      { id: "Graceful Portrait Ring", label: "Graceful Portrait", sub: "Tighter cinematic crop", image: "/styles/jewelry/ring/ring-4.webp" },
+      { id: "Soft Macro Ring", label: "Soft Macro", sub: "Product-first hand shot", image: "/styles/jewelry/ring/ring-5.webp" },
+      { id: "Artistic Stance Ring", label: "Artistic Stance", sub: "Dynamic hand pose", image: "/styles/jewelry/ring/ring-6.webp" },
+    ]
+  }
+};
+
 export default function JewelryStudio() {
   // File & Preview State
   const [file, setFile] = useState(null);
@@ -35,33 +62,6 @@ export default function JewelryStudio() {
     style: "Auto", // Default starting style
     productDescription: "",
   });
-
-  const JEWELRY_DATA = {
-    "Auto": { styles: [] },
-    "Necklace": {
-      styles: [
-        { id: "Editorial High-Fashion", label: "Editorial", sub: "Full face & portrait", image: "/styles/jewelry/necklace/necklace-1.png" },
-        { id: "Cinematic Half-Cut", label: "Cinematic", sub: "Half-face close-up", image: "/styles/jewelry/necklace/necklace-2.png" },
-        { id: "Luminous Detail", label: "Luminous", sub: "Macro product focus", image: "/styles/jewelry/necklace/necklace-3.png" },
-      ]
-    },
-    "Earrings": {
-      styles: [
-        { id: "Editorial Earring", label: "Editorial", sub: "Full face & portrait", image: "/styles/jewelry/earring/earring-1.png" },
-        { id: "Macro Ear", label: "Macro Detail", sub: "Close-up focus", image: "/styles/jewelry/earring/earring-2.png" },
-      ]
-    },
-    "Ring on finger": {
-      styles: [
-        { id: "Classic Editorial Ring", label: "Classic Editorial", sub: "Elegant hand-to-face", image: "/styles/jewelry/ring/ring-1.png" },
-        { id: "Cinematic Glow Ring", label: "Cinematic Glow", sub: "Warm editorial focus", image: "/styles/jewelry/ring/ring-2.png" },
-        { id: "Minimalist Product Ring", label: "Minimalist Product", sub: "Clean fabric backdrop", image: "/styles/jewelry/ring/ring-3.png" },
-        { id: "Graceful Portrait Ring", label: "Graceful Portrait", sub: "Tighter cinematic crop", image: "/styles/jewelry/ring/ring-4.png" },
-        { id: "Soft Macro Ring", label: "Soft Macro", sub: "Product-first hand shot", image: "/styles/jewelry/ring/ring-5.png" },
-        { id: "Artistic Stance Ring", label: "Artistic Stance", sub: "Dynamic hand pose", image: "/styles/jewelry/ring/ring-6.png" },
-      ]
-    }
-  };
 
   // Show success banner when payment completes
   useEffect(() => {
@@ -124,25 +124,18 @@ export default function JewelryStudio() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, [resultImage]);
 
-  // Preload jewelry styles to eliminate UI lag
+  // Preload lightweight WebP style thumbnails so picking jewelry type renders styles instantaneously
   useEffect(() => {
-    const preloadImages = () => {
-      Object.values(JEWELRY_DATA).forEach(typeData => {
-        if (typeData.styles) {
-          typeData.styles.forEach(style => {
-            if (style.image) {
-              const img = new window.Image();
-              img.src = style.image;
-            }
-          });
-        }
-      });
-    };
-
-    // Defer preloading slightly to prioritize main render
-    if (typeof window !== "undefined") {
-      setTimeout(preloadImages, 1000);
-    }
+    Object.values(JEWELRY_DATA).forEach((typeData) => {
+      if (typeData.styles) {
+        typeData.styles.forEach((style) => {
+          if (style.image) {
+            const img = new window.Image();
+            img.src = style.image;
+          }
+        });
+      }
+    });
   }, []);
 
   const handleFileChange = (e) => {
@@ -473,8 +466,8 @@ export default function JewelryStudio() {
                                 fill
                                 sizes="(max-width: 600px) 45vw, 20vw"
                                 style={{ objectFit: 'cover' }}
-                                placeholder="blur"
-                                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+                                loading="eager"
+                                unoptimized
                               />
                             ) : (
                               <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.2, backgroundColor: 'var(--background)' }}>STYLE</div>

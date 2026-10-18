@@ -107,22 +107,18 @@ export default function ClothingStudio() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, [resultImage]);
 
-  // Preload poses to eliminate UI lag
+  // Preload lightweight WebP thumbnails (~1KB each, 25KB total) so gender poses appear instantaneously
   useEffect(() => {
-    const preloadImages = () => {
-      const poses = ["front", "side", "back", "walking", "sitting", "leaning", "hips", "closeup_full", "closeup_half"];
-      poses.forEach(pose => {
-        const imgF = new window.Image();
-        imgF.src = `/poses/female/${pose}.png`;
-        const imgM = new window.Image();
-        imgM.src = `/poses/male/${pose}.png`;
-      });
+    const poses = ["front", "side", "back", "walking", "sitting", "leaning", "hips", "closeup_full", "closeup_half"];
+    const preload = (src) => {
+      const img = new window.Image();
+      img.src = src;
     };
-    
-    // Defer preloading slightly to prioritize main render
-    if (typeof window !== "undefined") {
-      setTimeout(preloadImages, 1000);
-    }
+    preload("/poses/best-match.webp");
+    poses.forEach((p) => {
+      preload(`/poses/female/${p}.webp`);
+      preload(`/poses/male/${p}.webp`);
+    });
   }, []);
 
   const handleFileChange = (e) => {
@@ -435,17 +431,17 @@ export default function ClothingStudio() {
                   <h4 style={{ textAlign: 'left', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', color: '#fff' }}>Pose Selection</h4>
                   <div className="pose-grid">
                     {[
-                      { id: "Best Match", label: "Best Match", thumb: `/poses/best-match.png` },
-                      { id: "Front", label: "Front", thumb: `/poses/${config.gender.toLowerCase()}/front.png` },
-                      { id: "Side View", label: "Side View", thumb: `/poses/${config.gender.toLowerCase()}/side.png` },
-                      { id: "Back", label: "Back", thumb: `/poses/${config.gender.toLowerCase()}/back.png` },
-                      { id: "Walking", label: "Walking", thumb: `/poses/${config.gender.toLowerCase()}/walking.png` },
-                      { id: "Sitting", label: "Sitting", thumb: `/poses/${config.gender.toLowerCase()}/sitting.png` },
-                      { id: "Leaning", label: "Leaning", thumb: `/poses/${config.gender.toLowerCase()}/leaning.png` },
-                      { id: "Hands on Hips", label: "Hips-On", thumb: `/poses/${config.gender.toLowerCase()}/hips.png` },
-                      { id: "Close up (Full)", label: "Close-Up", thumb: `/poses/${config.gender.toLowerCase()}/closeup_full.png` },
-                      { id: "Close up (Half Face)", label: "Focus On Cloth", thumb: `/poses/${config.gender.toLowerCase()}/closeup_half.png` },
-                    ].map(p => (
+                      { id: "Best Match", label: "Best Match", thumb: `/poses/best-match.webp` },
+                      { id: "Front", label: "Front", thumb: `/poses/${config.gender.toLowerCase()}/front.webp` },
+                      { id: "Side View", label: "Side View", thumb: `/poses/${config.gender.toLowerCase()}/side.webp` },
+                      { id: "Back", label: "Back", thumb: `/poses/${config.gender.toLowerCase()}/back.webp` },
+                      { id: "Walking", label: "Walking", thumb: `/poses/${config.gender.toLowerCase()}/walking.webp` },
+                      { id: "Sitting", label: "Sitting", thumb: `/poses/${config.gender.toLowerCase()}/sitting.webp` },
+                      { id: "Leaning", label: "Leaning", thumb: `/poses/${config.gender.toLowerCase()}/leaning.webp` },
+                      { id: "Hands on Hips", label: "Hips-On", thumb: `/poses/${config.gender.toLowerCase()}/hips.webp` },
+                      { id: "Close up (Full)", label: "Close-Up", thumb: `/poses/${config.gender.toLowerCase()}/closeup_full.webp` },
+                      { id: "Close up (Half Face)", label: "Focus On Cloth", thumb: `/poses/${config.gender.toLowerCase()}/closeup_half.webp` },
+                    ].map((p, i) => (
                       <div
                         key={p.id}
                         className={`pose-card ${config.pose === p.id ? 'active' : ''}`}
@@ -456,10 +452,10 @@ export default function ClothingStudio() {
                             src={p.thumb}
                             alt={p.label}
                             fill
-                            sizes="(max-width: 600px) 45vw, 15vw"
+                            sizes="(max-width: 600px) 30vw, 15vw"
                             style={{ objectFit: 'cover' }}
-                            placeholder="blur"
-                            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" // simple transparent fallback
+                            loading="eager"
+                            unoptimized
                           />
                         </div>
                         <span className="pose-label">{p.label}</span>
@@ -475,8 +471,8 @@ export default function ClothingStudio() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
 
                   {[
-                    { id: 'Indoor',  img: '/indoor.png',  label: 'Indoor'  },
-                    { id: 'Outdoor', img: '/outdoor.png', label: 'Outdoor' },
+                    { id: 'Indoor',  img: '/indoor.webp',  label: 'Indoor'  },
+                    { id: 'Outdoor', img: '/outdoor.webp', label: 'Outdoor' },
                     { id: 'Studio',  img: null,           label: 'Studio'  },
                   ].map(opt => (
                     <div

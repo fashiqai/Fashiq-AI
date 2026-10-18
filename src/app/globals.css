@@ -266,13 +266,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  position: relative;
 }
 
 .pose-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Fill the entire area */
+  transition: opacity 0.2s ease;
 }
 
 .pose-label {

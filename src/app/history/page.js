@@ -127,8 +127,15 @@ export default function HistoryPage() {
         </header>
 
         {isLoading ? (
-          <div style={{ textAlign: 'center', padding: '10rem 0', opacity: 0.5 }}>
-            Loading your gallery...
+          <div className="history-grid">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <div key={n} className="history-item">
+                <div className="history-image-wrap" style={{ aspectRatio: '3/4', background: 'var(--background)', position: 'relative' }}>
+                  <div className="history-skeleton" />
+                </div>
+                <div className="history-skeleton-text" />
+              </div>
+            ))}
           </div>
         ) : generations.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '10rem 0', background: 'var(--surface)', borderRadius: '2rem', border: '1px solid var(--border)' }}>
@@ -138,17 +145,37 @@ export default function HistoryPage() {
           </div>
         ) : (
           <div className="history-grid">
-            {generations.map((gen) => (
+            {generations.map((gen, idx) => (
               <div key={gen.id} className="history-item">
                 <div className="history-image-wrap" style={{ aspectRatio: '3/4', background: 'var(--background)', position: 'relative' }}>
                   {gen.status === 'completed' ? (
                     <>
+                      {/* Skeleton shimmer placeholder — visible until image loads */}
+                      <div className="history-skeleton" />
                       <img
                         src={gen.output_image_url}
                         alt="AI Result"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                        loading={idx < 4 ? 'eager' : 'lazy'}
+                        decoding="async"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          display: 'block',
+                          position: 'relative',
+                          zIndex: 1,
+                          opacity: 0,
+                          transition: 'opacity 0.25s ease',
+                        }}
+                        onLoad={(e) => {
+                          e.currentTarget.style.opacity = '1';
+                          const skeleton = e.currentTarget.previousSibling;
+                          if (skeleton) skeleton.style.display = 'none';
+                        }}
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
+                          const skeleton = e.currentTarget.previousSibling;
+                          if (skeleton) skeleton.style.display = 'none';
                           e.currentTarget.nextSibling.style.display = 'flex';
                         }}
                       />
@@ -189,6 +216,11 @@ export default function HistoryPage() {
 
         <style jsx>{`
           @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+          
+          @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+          }
 
           .history-page {
             padding: 4rem 2rem;
@@ -206,6 +238,51 @@ export default function HistoryPage() {
             border-radius: 1.25rem;
             overflow: hidden;
             border: 1px solid var(--border);
+            position: relative;
+          }
+
+          .history-skeleton {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            z-index: 0;
+          }
+
+          .history-skeleton::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+              90deg,
+              transparent 0%,
+              rgba(255, 255, 255, 0.08) 50%,
+              transparent 100%
+            );
+            animation: shimmer 1.5s infinite;
+          }
+
+          .history-skeleton-text {
+            height: 12px;
+            width: 70%;
+            margin-top: 0.6rem;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+          }
+
+          .history-skeleton-text::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+              90deg,
+              transparent 0%,
+              rgba(255, 255, 255, 0.08) 50%,
+              transparent 100%
+            );
+            animation: shimmer 1.5s infinite;
           }
 
           .history-download-btn {
@@ -224,6 +301,7 @@ export default function HistoryPage() {
             justify-content: center;
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
             transition: transform 0.15s ease, opacity 0.15s ease;
+            z-index: 2;
           }
           .history-download-btn:hover { transform: scale(1.05); }
           .history-download-btn:active { transform: scale(0.95); }
