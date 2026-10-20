@@ -187,10 +187,18 @@ export async function POST(req) {
         "Soft Pink":  "soft pastel pink seamless studio backdrop",
         "Black":      "deep black seamless studio backdrop",
       };
+      const identityPromptMap = {
+        "Western":    "Western European features, high-fashion editorial look",
+        "East Asian": "East Asian features, modern high-fashion editorial look",
+        "African":    "African features, radiant rich complexion, striking high-fashion editorial look",
+        "Indian":     "South Asian Indian features, elegant high-fashion editorial look",
+        "Latino":     "Latino Hispanic features, warm radiant complexion, high-fashion editorial look",
+      };
+      const modelIdentityPrompt = identityPromptMap[identity] || `${identity || "Western"} features, high-fashion editorial look`;
       const backgroundPrompt = background === "Studio"
         ? `a minimalist ${studioColorPrompts[studioColor] || "white seamless studio backdrop"}, no props, no distractions, clean product-focused studio environment`
         : `a professional ${background} setting`;
-      finalPrompt = `A luxury ${year} fashion photoshoot, a ${gender} model with ${identity} features, ${compositionStyle}, ${backgroundPrompt}. ${randomVibe}, natural skin pores, realistic micro-expressions, avoid plastic look, hyper-realistic, masterpiece.`;
+      finalPrompt = `A luxury ${year} fashion photoshoot, a ${gender} model with ${modelIdentityPrompt}, ${compositionStyle}, ${backgroundPrompt}. ${randomVibe}, natural skin pores, realistic micro-expressions, avoid plastic look, hyper-realistic, masterpiece.`;
     }
 
     const response = await fetch("https://api.fashn.ai/v1/run", {

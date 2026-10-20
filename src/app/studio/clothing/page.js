@@ -423,7 +423,32 @@ export default function ClothingStudio() {
               </div>
 
               <ConfigSection label="Gender Target" value={config.gender} options={["Female", "Male"]} onUpdate={v => { updateConfig('gender', v); updateConfig('pose', 'Best Match'); }} />
-              <ConfigSection label="Model Identity" value={config.identity} options={["Western", "Indian"]} onUpdate={v => updateConfig('identity', v)} />
+              {/* Model Identity (3 on first row, 2 on second row) */}
+              <div className="selection-group" style={{ textAlign: 'left', width: '100%' }}>
+                <h4 style={{ textAlign: 'left', marginBottom: '1.25rem', fontSize: '0.75rem', fontWeight: '600', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Model Identity</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.65rem', width: '100%' }}>
+                  {["Western", "East Asian", "African", "Indian", "Latino"].map(opt => (
+                    <button
+                      key={opt}
+                      type="button"
+                      className={`rounded-box ${config.identity === opt ? 'active' : ''}`}
+                      onClick={() => updateConfig('identity', opt)}
+                      style={{
+                        width: '100%',
+                        padding: '0.85rem 0.25rem',
+                        textAlign: 'center',
+                        borderRadius: '100px',
+                        fontSize: '0.82rem',
+                        fontWeight: '500',
+                        whiteSpace: 'nowrap',
+                        border: config.identity === opt ? '3px solid var(--accent)' : '3px solid rgba(255,255,255,0.18)',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >{opt}</button>
+                  ))}
+                </div>
+              </div>
 
               {/* 3x3 Visual Pose Grid (Condition: Only show if Gender is selected) */}
               {config.gender && (
